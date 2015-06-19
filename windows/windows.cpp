@@ -88,7 +88,7 @@ int main(int argv, char *argc[]) {
   // ----------------------------- //
 
   int marker_arr[4];
-  int guess_arr[4];
+  int *guesses;
 
 	// TODO(brian): HACK! Don't forget to actually create an answer.
 	int answer[4] = {0, 0, 0, 0};
@@ -106,8 +106,8 @@ int main(int argv, char *argc[]) {
 
     cleanUpWindow(winders.bottom);
     guess.compareWithAnswer(answer);
-    guess.showGuesses(guess_arr);
-    dispGuesses(winders.middle, guess, guess_arr, outer);
+    guesses = guess.getGuesses();
+    dispGuesses(winders.middle, guesses, outer);
     guess.showMarkers(marker_arr);
     dispMarkers(winders.left, marker_arr, outer);
 
@@ -168,13 +168,12 @@ bool getInput(Guess &g, int x, Winders winders) {
              INPUT_LENGTH);
 
 	std::string guess = input;
-  if (strcmp(input, "quit") == 0) {
+  if (!strcmp(input, "quit")) {
     closeCurses(winders);
     g.quitGame();
-  } else if (strcmp(input, "undo") == 0) {
-    ;  // still need to implement this
-  } else if (g.isValid(guess))
+  } else if (g.isValid(guess)) {
     done = true;
+	}
 
   return (done);
 }
@@ -198,8 +197,7 @@ void wrongInput(WINDOW *local_win, Guess &g, int x) {
   wrefresh(local_win);
 }
 
-void dispGuesses(WINDOW *local_win, const Guess &g, int guess_arr[],
-                 int outer) {
+void dispGuesses(WINDOW *local_win, int *guesses, int outer) {
   int i, y, x;
   y = 15 - outer;
   for (i = 0; i < 4; i++) {
@@ -211,7 +209,7 @@ void dispGuesses(WINDOW *local_win, const Guess &g, int guess_arr[],
       x = 10;
     else if (i == 3)
       x = 14;
-    switch (guess_arr[i]) {
+    switch (guesses[i]) {
       case RED:
         mvwaddch(local_win, y, x, 'X' | COLOR_PAIR(0) | A_BOLD);
         break;

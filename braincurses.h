@@ -11,7 +11,7 @@ enum Colors { RED, WHITE, YELLOW, GREEN, BLUE, PURPLE };
 
 class Guess {
  private:
-  int guess[4];
+  int guesses[4];
   int markers[4];  // used to keep track if a guess is in the correct place
                    // 0 = black, 1 = white, 3 = none
   void setInput(std::string str, int tracker);
@@ -26,7 +26,7 @@ class Guess {
   bool isValid(std::string tmp);
   void compareWithAnswer(int answer[]);
   void showMarkers(int array[]);
-  void showGuesses(int array[]);
+  int *getGuesses();
   void quitGame();
 };
 

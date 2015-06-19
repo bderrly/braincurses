@@ -23,7 +23,7 @@ int getRandomNumber() {
 
 Guess::Guess() {
   for (int i = 0; i < 4; i++) {
-    guess[i] = 0;
+    guesses[i] = 0;
     markers[i] = 0;
   }
 }
@@ -68,17 +68,17 @@ bool Guess::isValid(std::string tmp) {
 
 void Guess::setInput(std::string str, int tracker) {
   if (str == "red")
-    guess[tracker] = RED;
+    guesses[tracker] = RED;
   else if (str == "white")
-    guess[tracker] = WHITE;
+    guesses[tracker] = WHITE;
   else if (str == "yellow")
-    guess[tracker] = YELLOW;
+    guesses[tracker] = YELLOW;
   else if (str == "green")
-    guess[tracker] = GREEN;
+    guesses[tracker] = GREEN;
   else if (str == "blue")
-    guess[tracker] = BLUE;
+    guesses[tracker] = BLUE;
   else if (str == "purple")
-    guess[tracker] = PURPLE;
+    guesses[tracker] = PURPLE;
   else {
     std::cerr << "braincurses: incorrect input" << std::endl;
     exit(1);
@@ -93,7 +93,7 @@ void Guess::compareWithAnswer(int answer[]) {
   int i;
 
   for (i = 0; i < 4; i++) {
-    if (guess[i] == answer[i]) {
+    if (guesses[i] == answer[i]) {
       bMarker++;
     }
   }
@@ -108,7 +108,7 @@ void Guess::compareWithAnswer(int answer[]) {
   }
 
   for (i = 0; i < 4; i++) {
-    guess_num[guess[i]]++;
+    guess_num[guesses[i]]++;
     ans_num[answer[i]]++;
   }
 
@@ -145,13 +145,13 @@ void Guess::setMarkers(int bMarker, int wMarker) {
 }
 
 void Guess::showMarkers(int array[]) {
-  int i;
-  for (i = 0; i < 4; i++) array[i] = markers[i];
+  for (int i = 0; i < 4; i++) {
+	 	array[i] = markers[i];
+	}
 }
 
-void Guess::showGuesses(int array[]) {
-  int i;
-  for (i = 0; i < 4; i++) array[i] = guess[i];
+int *Guess::getGuesses() {
+	return guesses;
 }
 
 void Guess::quitGame() {
