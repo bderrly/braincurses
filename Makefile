@@ -1,8 +1,13 @@
-LDLIBS=-lncurses
+CXXFLAGS += -Wall
+LDLIBS += -lncurses
+
+.PHONY: all clean
+
+all: braincurses
 
 braincurses: windows/windows.o braincurses.o 
-	$(LINK.cc) $^ $(LDLIBS) -o $@
+	$(LINK.cc) $^ ${LDLIBS} -o $@
 
 clean:
-	rm -f braincurses
-	rm -f **/*.o
+	@- $(RM) braincurses
+	@- $(RM) *.o windows/*.o
