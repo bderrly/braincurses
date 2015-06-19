@@ -34,7 +34,7 @@ void dispMarkers(WINDOW *local_win, int marker_arr[], int outer);
 bool isWinner(int marker_arr[]);
 void youWin(WINDOW *local_win);
 void youLose(WINDOW *local_win);
-void dispAnswers(WINDOW *local_win, Answer ans);
+void dispAnswers(WINDOW *local_win, int answer[]);
 bool playAgain(WINDOW *local_win);
 void closeCurses(Winders winders);
 void printTopScores(WINDOW *local_win);

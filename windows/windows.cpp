@@ -4,14 +4,13 @@
 
 #include "windows.h"
 
+#include <cstdlib>
+#include <iostream>
+#include <string>
+
 #define DEFAULT_NUM_GUESSES 10
 
-using namespace std;
-
 int main(int argv, char *argc[]) {
-  /*  Thanks to Peter Peterson for adding the ability to set the
-   *  number of guesses from the command line.  An option I never
-   *  thought about but is a good one.  */
   int maxGuesses = DEFAULT_NUM_GUESSES;
   if (argv == 2) maxGuesses = atoi(argc[1]);
   if (maxGuesses <= 0) maxGuesses = DEFAULT_NUM_GUESSES;
@@ -21,15 +20,15 @@ int main(int argv, char *argc[]) {
   if (has_colors()) {
     start_color();
 
-    init_pair(1, COLOR_RED, COLOR_BLACK);
-    init_pair(2, COLOR_WHITE, COLOR_BLACK);
-    init_pair(3, COLOR_YELLOW, COLOR_BLACK);
-    init_pair(4, COLOR_GREEN, COLOR_BLACK);
-    init_pair(5, COLOR_BLUE, COLOR_BLACK);
-    init_pair(6, COLOR_MAGENTA, COLOR_BLACK);
+    init_pair(0, COLOR_RED, COLOR_BLACK);
+    init_pair(1, COLOR_WHITE, COLOR_BLACK);
+    init_pair(2, COLOR_YELLOW, COLOR_BLACK);
+    init_pair(3, COLOR_GREEN, COLOR_BLACK);
+    init_pair(4, COLOR_BLUE, COLOR_BLACK);
+    init_pair(5, COLOR_MAGENTA, COLOR_BLACK);
   } else {
-    cerr << "braincurses: Your terminal cannot display colors.\n"
-         << "Gameplay is not possible without colors." << endl;
+    std::cerr << "braincurses: Your terminal cannot display colors.\n"
+         << "Gameplay is not possible without colors." << std::endl;
     exit(99);
   }
 
@@ -88,10 +87,11 @@ int main(int argv, char *argc[]) {
   doupdate();
   // ----------------------------- //
 
-  Answer ans;  // setup random numbers for first game
-
   int marker_arr[4];
   int guess_arr[4];
+
+	// TODO(brian): HACK! Don't forget to actually create an answer.
+	int answer[4] = {0, 0, 0, 0};
 
   int outer = 0, inner = 0;
   bool winner = false;
@@ -105,7 +105,7 @@ int main(int argv, char *argc[]) {
     }  // end "inner" loop
 
     cleanUpWindow(winders.bottom);
-    guess.compareWithAnswer(ans);
+    guess.compareWithAnswer(answer);
     guess.showGuesses(guess_arr);
     dispGuesses(winders.middle, guess, guess_arr, outer);
     guess.showMarkers(marker_arr);
@@ -121,11 +121,11 @@ int main(int argv, char *argc[]) {
 
   if (winner == true) {
     youWin(winders.bottom);
-    dispAnswers(winders.top_right, ans);
+    dispAnswers(winders.top_right, answer);
     // writeScores( outer );
   } else {
     youLose(winders.bottom);
-    dispAnswers(winders.top_right, ans);
+    dispAnswers(winders.top_right, answer);
   }
 
   wgetch(winders.bottom);
@@ -167,7 +167,7 @@ bool getInput(Guess &g, int x, Winders winders) {
   mvwgetnstr(winders.bottom, 1, 14 * (x + 1) - INPUT_LENGTH, input,
              INPUT_LENGTH);
 
-  string guess = input;
+	std::string guess = input;
   if (strcmp(input, "quit") == 0) {
     closeCurses(winders);
     g.quitGame();
@@ -213,22 +213,22 @@ void dispGuesses(WINDOW *local_win, const Guess &g, int guess_arr[],
       x = 14;
     switch (guess_arr[i]) {
       case RED:
-        mvwaddch(local_win, y, x, 'X' | COLOR_PAIR(1) | A_BOLD);
+        mvwaddch(local_win, y, x, 'X' | COLOR_PAIR(0) | A_BOLD);
         break;
       case WHITE:
-        mvwaddch(local_win, y, x, 'X' | COLOR_PAIR(2) | A_BOLD);
+        mvwaddch(local_win, y, x, 'X' | COLOR_PAIR(1) | A_BOLD);
         break;
       case YELLOW:
-        mvwaddch(local_win, y, x, 'X' | COLOR_PAIR(3) | A_BOLD);
+        mvwaddch(local_win, y, x, 'X' | COLOR_PAIR(2) | A_BOLD);
         break;
       case GREEN:
-        mvwaddch(local_win, y, x, 'X' | COLOR_PAIR(4) | A_BOLD);
+        mvwaddch(local_win, y, x, 'X' | COLOR_PAIR(3) | A_BOLD);
         break;
       case BLUE:
-        mvwaddch(local_win, y, x, 'X' | COLOR_PAIR(5) | A_BOLD);
+        mvwaddch(local_win, y, x, 'X' | COLOR_PAIR(4) | A_BOLD);
         break;
       case PURPLE:
-        mvwaddch(local_win, y, x, 'X' | COLOR_PAIR(6) | A_BOLD);
+        mvwaddch(local_win, y, x, 'X' | COLOR_PAIR(5) | A_BOLD);
         break;
     }
     wrefresh(local_win);
@@ -249,9 +249,9 @@ void dispMarkers(WINDOW *local_win, int marker_arr[], int outer) {
       x = 14;
 
     if (marker_arr[i] == 0)
-      mvwaddch(local_win, y, x, 'X' | COLOR_PAIR(1) | A_BOLD);
+      mvwaddch(local_win, y, x, 'X' | COLOR_PAIR(0) | A_BOLD);
     else if (marker_arr[i] == 1)
-      mvwaddch(local_win, y, x, 'X' | COLOR_PAIR(2) | A_BOLD);
+      mvwaddch(local_win, y, x, 'X' | COLOR_PAIR(1) | A_BOLD);
   }  // end for
   wrefresh(local_win);
 }
@@ -283,7 +283,7 @@ void youLose(WINDOW *local_win) {
   wrefresh(local_win);
 }
 
-void dispAnswers(WINDOW *local_win, Answer ans) {
+void dispAnswers(WINDOW *local_win, int answer[]) {
   int i, x;
   for (i = 0; i < 4; i++) {
     if (i == 0)
@@ -295,24 +295,24 @@ void dispAnswers(WINDOW *local_win, Answer ans) {
     else if (i == 3)
       x = 15;
 
-    switch (ans.grabAnswer(i)) {
+    switch (answer[i]) {
       case RED:
-        mvwaddch(local_win, 1, x, 'X' | COLOR_PAIR(1) | A_BOLD);
+        mvwaddch(local_win, 1, x, 'X' | COLOR_PAIR(0) | A_BOLD);
         break;
       case WHITE:
-        mvwaddch(local_win, 1, x, 'X' | COLOR_PAIR(2) | A_BOLD);
+        mvwaddch(local_win, 1, x, 'X' | COLOR_PAIR(1) | A_BOLD);
         break;
       case YELLOW:
-        mvwaddch(local_win, 1, x, 'X' | COLOR_PAIR(3) | A_BOLD);
+        mvwaddch(local_win, 1, x, 'X' | COLOR_PAIR(2) | A_BOLD);
         break;
       case GREEN:
-        mvwaddch(local_win, 1, x, 'X' | COLOR_PAIR(4) | A_BOLD);
+        mvwaddch(local_win, 1, x, 'X' | COLOR_PAIR(3) | A_BOLD);
         break;
       case BLUE:
-        mvwaddch(local_win, 1, x, 'X' | COLOR_PAIR(5) | A_BOLD);
+        mvwaddch(local_win, 1, x, 'X' | COLOR_PAIR(4) | A_BOLD);
         break;
       case PURPLE:
-        mvwaddch(local_win, 1, x, 'X' | COLOR_PAIR(6) | A_BOLD);
+        mvwaddch(local_win, 1, x, 'X' | COLOR_PAIR(5) | A_BOLD);
         break;
     }
 

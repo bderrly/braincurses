@@ -4,30 +4,25 @@
 
 #include "braincurses.h"
 
-using namespace std;
+#include <cstddef>
+#include <cstdlib>
+#include <ctime>
+#include <iostream>
+#include <string>
+#include <unistd.h>
 
-Answer::Answer() { getRdmNums(); }
-
-Answer::~Answer() {}
-
-void Answer::getRdmNums() {
+int getRandomNumber() {
+	// TODO(brian): Move seed to main().
   static bool ran = false;
-  int i;
-  if (ran == false) {
-    srand(time(0) * getpid());
+  if (!ran) {
+    srand(time(NULL));
     ran = true;
   }
-
-  for (i = 0; i < 4; i++)
-    answer[i] = 1 + (int)(6.0 * rand() / (RAND_MAX + 1.0));
+	return rand() % 6;
 }
 
-int Answer::grabAnswer(int x) { return (answer[x]); }
-
 Guess::Guess() {
-  // Initialize the variables
-  int i;
-  for (i = 0; i < 4; i++) {
+  for (int i = 0; i < 4; i++) {
     guess[i] = 0;
     markers[i] = 0;
   }
@@ -35,7 +30,7 @@ Guess::Guess() {
 
 Guess::~Guess() {}
 
-bool Guess::isValid(string tmp) {
+bool Guess::isValid(std::string tmp) {
   bool done = false;
   static int tracker = 0;
   if (tracker == 4) tracker = 0;
@@ -71,7 +66,7 @@ bool Guess::isValid(string tmp) {
   return (done);
 }
 
-void Guess::setInput(string str, int tracker) {
+void Guess::setInput(std::string str, int tracker) {
   if (str == "red")
     guess[tracker] = RED;
   else if (str == "white")
@@ -85,15 +80,12 @@ void Guess::setInput(string str, int tracker) {
   else if (str == "purple")
     guess[tracker] = PURPLE;
   else {
-    cerr << "braincurses: incorrect input" << endl;
+    std::cerr << "braincurses: incorrect input" << std::endl;
     exit(1);
   }
 }
 
-void Guess::compareWithAnswer(Answer ans) {
-  // Assertion:  You will call this function with your current Answer object
-  // for it to correctly compare against user inputed guesses
-
+void Guess::compareWithAnswer(int answer[]) {
   int bMarker = 0, wMarker = 0;
   // bMarker indicates that the guess is the correct color and placement
   // wMarker indicates that a guess is correct color but not placement
@@ -101,7 +93,7 @@ void Guess::compareWithAnswer(Answer ans) {
   int i;
 
   for (i = 0; i < 4; i++) {
-    if (guess[i] == ans.grabAnswer(i)) {
+    if (guess[i] == answer[i]) {
       bMarker++;
     }
   }
@@ -117,7 +109,7 @@ void Guess::compareWithAnswer(Answer ans) {
 
   for (i = 0; i < 4; i++) {
     guess_num[guess[i]]++;
-    ans_num[ans.grabAnswer(i)]++;
+    ans_num[answer[i]]++;
   }
 
   for (i = 0; i < num_len; i++) {
@@ -163,7 +155,6 @@ void Guess::showGuesses(int array[]) {
 }
 
 void Guess::quitGame() {
-  system("clear");
-  cout << "Bye, thanks for playing." << endl;
+  std::cout << "Bye, thanks for playing." << std::endl;
   exit(0);
 }
