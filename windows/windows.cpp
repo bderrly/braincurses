@@ -79,9 +79,9 @@ int main( int argv, char *argc[] )
    mvwaddch( winders.top_right, 1, 11, hidden );
    mvwaddch( winders.top_right, 1, 15, hidden );
 
-   char guessLabel[2];
+   char guessLabel[3];
    for( int i = 1; i <= maxGuesses; i++ ) {
-      sprintf( guessLabel, "%2d", i );
+      snprintf( guessLabel, 3, "%2d", i );
       mvwaddstr( slit, 16-i, 0, guessLabel );
    }
    wmove( winders.bottom, 1, 15 );
