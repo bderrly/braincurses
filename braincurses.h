@@ -6,13 +6,14 @@
 #define BRAINCURSES_H
 
 #include <string>
+#include <vector>
 
 enum Colors { RED, WHITE, YELLOW, GREEN, BLUE, PURPLE };
 
 class Guess {
  private:
-  int guesses[4];
-  int markers[4];  // used to keep track if a guess is in the correct place
+  std::vector<int> guesses;
+	std::vector<int> markers;  // used to keep track if a guess is in the correct place
                    // 0 = black, 1 = white, 3 = none
   void setInput(std::string str, int tracker);
   void setMarkers(int bMarker, int wMarker);
@@ -25,7 +26,7 @@ class Guess {
   bool isValid(std::string tmp);
   void compareWithAnswer(int answer[]);
   void showMarkers(int array[]);
-  int *getGuesses();
+	std::vector<int> getGuesses();
   void quitGame();
 };
 

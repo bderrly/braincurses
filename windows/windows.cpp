@@ -7,88 +7,81 @@
 #include <cstdlib>
 #include <iostream>
 #include <string>
+#include <vector>
 
 #define DEFAULT_NUM_GUESSES 10
+
+void initScreen(Winders *winders) {
+  initscr();
+	if (!has_colors()) {
+    std::cerr << "braincurses: Your terminal cannot display colors.\n"
+         << "Gameplay is not possible without colors." << std::endl;
+    exit(99);
+	}
+	start_color();
+	init_pair(0, COLOR_RED, COLOR_BLACK);
+	init_pair(1, COLOR_WHITE, COLOR_BLACK);
+	init_pair(2, COLOR_YELLOW, COLOR_BLACK);
+	init_pair(3, COLOR_GREEN, COLOR_BLACK);
+	init_pair(4, COLOR_BLUE, COLOR_BLACK);
+	init_pair(5, COLOR_MAGENTA, COLOR_BLACK);
+
+	cbreak();
+  //curs_set(1); // Set cursor to normal visibility
+
+  winders->top_left = create_newwin(3, 18, 0, 0);
+  winders->top_right = create_newwin(3, 18, 0, 18);
+  winders->left = create_newwin(17, 17, 3, 0);
+  winders->middle = create_newwin(17, 17, 3, 19);
+  winders->right = create_newwin(20, 24, 0, 36);
+  winders->bottom = create_newwin(3, 60, 20, 0);
+  winders->slit = create_newwin(17, 2, 3, 17);
+
+  keypad(winders->bottom, TRUE);
+
+  mvwaddstr(winders->top_left, 1, 4, GAME_NAME.c_str());
+  //mvwaddstr(winders->right, 18, 2, COPYRIGHT.c_str());
+  mvwaddstr(winders->right, 18, 11, AUTHOR.c_str());
+  mvwaddstr(winders->right, 1, 2, "Colors: ");
+  mvwaddstr(winders->right, 2, 2, "RED, BLUE, YELLOW");
+  mvwaddstr(winders->right, 3, 2, "WHITE, GREEN, PURPLE");
+  mvwaddstr(winders->right, 5, 2, "Type \"quit\" to end");
+  mvwaddstr(winders->right, 6, 2, "the game.");
+  mvwaddstr(winders->right, 8, 2, "Remember to hit the");
+  mvwaddstr(winders->right, 9, 2, "enter key after each");
+  mvwaddstr(winders->right, 10, 2, "guess!");
+  mvwaddstr(winders->top_right, 1, 3, "X");
+  mvwaddstr(winders->top_right, 1, 7, "X");
+  mvwaddstr(winders->top_right, 1, 11, "X");
+  mvwaddstr(winders->top_right, 1, 15, "X");
+}
 
 int main(int argv, char *argc[]) {
   int maxGuesses = DEFAULT_NUM_GUESSES;
   if (argv == 2) maxGuesses = atoi(argc[1]);
   if (maxGuesses <= 0) maxGuesses = DEFAULT_NUM_GUESSES;
   if (maxGuesses > 15) maxGuesses = 15;
-  initscr();
 
-  if (has_colors()) {
-    start_color();
-
-    init_pair(0, COLOR_RED, COLOR_BLACK);
-    init_pair(1, COLOR_WHITE, COLOR_BLACK);
-    init_pair(2, COLOR_YELLOW, COLOR_BLACK);
-    init_pair(3, COLOR_GREEN, COLOR_BLACK);
-    init_pair(4, COLOR_BLUE, COLOR_BLACK);
-    init_pair(5, COLOR_MAGENTA, COLOR_BLACK);
-  } else {
-    std::cerr << "braincurses: Your terminal cannot display colors.\n"
-         << "Gameplay is not possible without colors." << std::endl;
-    exit(99);
-  }
-
-  cbreak();
-  curs_set(1);
-
-  Winders winders;
-
-  winders.top_left = create_newwin(3, 18, 0, 0);
-  winders.top_right = create_newwin(3, 18, 0, 18);
-  winders.left = create_newwin(17, 17, 3, 0);
-  winders.middle = create_newwin(17, 17, 3, 19);
-  winders.right = create_newwin(20, 24, 0, 36);
-  winders.bottom = create_newwin(3, 60, 20, 0);
-
-  keypad(winders.bottom, TRUE);
-
-  // --- make a small window for the ruler --- //
-  WINDOW *slit;
-  slit = newwin(17, 2, 3, 17);
-  wrefresh(slit);
-  // --- all done with that --- //
+	Winders *winders = new Winders;
+	initScreen(winders);
 
   // ----------------------------- //
   //    set up unchanging texts    //
-  char game_name[12] = "BrainCurses";
-  char author[11] = "Brian Derr";
-  char copyright[9] = "(c) 2002";
-  char hidden = 'X';
-  mvwaddstr(winders.top_left, 1, 4, game_name);
-  mvwaddstr(winders.right, 18, 2, copyright);
-  mvwaddstr(winders.right, 18, 11, author);
-  mvwaddstr(winders.right, 1, 2, "Colors: ");
-  mvwaddstr(winders.right, 2, 2, "RED, BLUE, YELLOW");
-  mvwaddstr(winders.right, 3, 2, "WHITE, GREEN, PURPLE");
-  mvwaddstr(winders.right, 5, 2, "Type \"quit\" to end");
-  mvwaddstr(winders.right, 6, 2, "the game.");
-  mvwaddstr(winders.right, 8, 2, "Remember to hit the");
-  mvwaddstr(winders.right, 9, 2, "enter key after each");
-  mvwaddstr(winders.right, 10, 2, "guess!");
-  mvwaddch(winders.top_right, 1, 3, hidden);
-  mvwaddch(winders.top_right, 1, 7, hidden);
-  mvwaddch(winders.top_right, 1, 11, hidden);
-  mvwaddch(winders.top_right, 1, 15, hidden);
-
   char guessLabel[3];
   for (int i = 1; i <= maxGuesses; i++) {
     snprintf(guessLabel, 3, "%2d", i);
-    mvwaddstr(slit, 16 - i, 0, guessLabel);
+    mvwaddstr(winders->slit, 16 - i, 0, guessLabel);
   }
-  wmove(winders.bottom, 1, 15);
-  wnoutrefresh(winders.top_left);
-  wnoutrefresh(winders.top_right);
-  wnoutrefresh(winders.right);
-  wnoutrefresh(slit);
+  wmove(winders->bottom, 1, 15);
+  wnoutrefresh(winders->top_left);
+  wnoutrefresh(winders->top_right);
+  wnoutrefresh(winders->right);
+  wnoutrefresh(winders->slit);
   doupdate();
   // ----------------------------- //
 
   int marker_arr[4];
-  int *guesses;
+	std::vector<int> guesses;
 
 	// TODO(brian): HACK! Don't forget to actually create an answer.
 	int answer[4] = {0, 0, 0, 0};
@@ -99,17 +92,17 @@ int main(int argv, char *argc[]) {
     Guess guess;
     for (inner = 0; inner < 4; inner++) {
       if (!getInput(guess, inner, winders)) {
-        wrongInput(winders.bottom, guess, inner);
+        wrongInput(winders->bottom, guess, inner);
         inner -= 1;
       }
     }  // end "inner" loop
 
-    cleanUpWindow(winders.bottom);
+    cleanUpWindow(winders->bottom);
     guess.compareWithAnswer(answer);
     guesses = guess.getGuesses();
-    dispGuesses(winders.middle, guesses, outer);
+    dispGuesses(winders->middle, guesses, outer);
     guess.showMarkers(marker_arr);
-    dispMarkers(winders.left, marker_arr, outer);
+    dispMarkers(winders->left, marker_arr, outer);
 
     if (isWinner(marker_arr)) {
       winner = true;
@@ -120,16 +113,16 @@ int main(int argv, char *argc[]) {
   }  // end "outer" while loop
 
   if (winner == true) {
-    youWin(winders.bottom);
-    dispAnswers(winders.top_right, answer);
+    youWin(winders->bottom);
+    dispAnswers(winders->top_right, answer);
     // writeScores( outer );
   } else {
-    youLose(winders.bottom);
-    dispAnswers(winders.top_right, answer);
+    youLose(winders->bottom);
+    dispAnswers(winders->top_right, answer);
   }
 
-  wgetch(winders.bottom);
-  if (playAgain(winders.bottom)) main(argv, argc);
+  wgetch(winders->bottom);
+  if (playAgain(winders->bottom)) main(argv, argc);
 
   // wrap the show up
   closeCurses(winders);
@@ -161,10 +154,10 @@ void cleanUpWindow(WINDOW *local_win) {
   wrefresh(local_win);
 }
 
-bool getInput(Guess &g, int x, Winders winders) {
+bool getInput(Guess &g, int x, Winders *winders) {
   bool done = false;
   char input[INPUT_LENGTH];
-  mvwgetnstr(winders.bottom, 1, 14 * (x + 1) - INPUT_LENGTH, input,
+  mvwgetnstr(winders->bottom, 1, 14 * (x + 1) - INPUT_LENGTH, input,
              INPUT_LENGTH);
 
 	std::string guess = input;
@@ -197,7 +190,7 @@ void wrongInput(WINDOW *local_win, Guess &g, int x) {
   wrefresh(local_win);
 }
 
-void dispGuesses(WINDOW *local_win, int *guesses, int outer) {
+void dispGuesses(WINDOW *local_win, std::vector<int> guesses, int outer) {
   int i, y, x;
   y = 15 - outer;
   for (i = 0; i < 4; i++) {
@@ -333,13 +326,13 @@ bool playAgain(WINDOW *local_win) {
   return (again == 'y' ? true : false);
 }
 
-void closeCurses(Winders winders) {
-  destroy_win(winders.top_left);
-  destroy_win(winders.top_right);
-  destroy_win(winders.left);
-  destroy_win(winders.middle);
-  destroy_win(winders.right);
-  destroy_win(winders.bottom);
+void closeCurses(Winders *winders) {
+  destroy_win(winders->top_left);
+  destroy_win(winders->top_right);
+  destroy_win(winders->left);
+  destroy_win(winders->middle);
+  destroy_win(winders->right);
+  destroy_win(winders->bottom);
 
   endwin();
 }

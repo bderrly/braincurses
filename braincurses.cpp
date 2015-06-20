@@ -150,7 +150,7 @@ void Guess::showMarkers(int array[]) {
 	}
 }
 
-int *Guess::getGuesses() {
+std::vector<int> Guess::getGuesses() {
 	return guesses;
 }
 
