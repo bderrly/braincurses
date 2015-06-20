@@ -21,12 +21,7 @@ int getRandomNumber() {
 	return rand() % 6;
 }
 
-Guess::Guess() {
-  for (int i = 0; i < 4; i++) {
-    guesses[i] = 0;
-    markers[i] = 0;
-  }
-}
+Guess::Guess() {}
 
 Guess::~Guess() {}
 
