@@ -17,7 +17,6 @@ class Guess {
   void setInput(std::string str, int tracker);
   void setMarkers(int bMarker, int wMarker);
 
- protected:
  public:
   Guess();
   Guess(int guess1, int guess2, int guess3, int guess4);
