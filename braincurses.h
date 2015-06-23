@@ -1,33 +1,25 @@
-/* braincurses.h
- * Copyright © 2002, Brian Derr <brian@derrclan.com>
+/* code.h
+ * Copyright © 2015, Brian Derr <brian@derrclan.com>
  */
 
-#ifndef BRAINCURSES_H
-#define BRAINCURSES_H
+#ifndef CODE_H
+#define CODE_H
 
-#include <string>
 #include <vector>
 
 enum Colors { RED, WHITE, YELLOW, GREEN, BLUE, PURPLE };
 
-class Guess {
+class Code {
  private:
-  std::vector<int> guesses;
-	std::vector<int> markers;  // used to keep track if a guess is in the correct place
-                   // 0 = black, 1 = white, 3 = none
-  void setInput(std::string str, int tracker);
-  void setMarkers(int bMarker, int wMarker);
+  int code[4];
+	int getRandomNumber();
 
  public:
-  Guess();
-  Guess(int guess1, int guess2, int guess3, int guess4);
-  ~Guess();
+  Code();
+  ~Code();
 
-  bool isValid(std::string tmp);
-  void compareWithAnswer(int answer[]);
-  void showMarkers(int array[]);
-	std::vector<int> getGuesses();
-  void quitGame();
+	void createCode();
+	std::vector<int> isCorrect(std:vector<int> guesses);
 };
 
-#endif  // BRAINCURSES_H
+#endif  // CODE_H
