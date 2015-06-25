@@ -5,11 +5,20 @@
 #include "code.h"
 
 #include <cstdlib>
-#include <time>
-
+#include <ctime>
+#include <iostream>
+#include <sstream>
+#include <string>
 
 Code::Code() {
-	srand(time(NULL));
+	Code(time(NULL));
+}
+
+Code::Code(int seed) {
+	srand(seed);
+	for (int i = 0; i < 6; i++) {
+		digits[i] = 0;
+	}
 }
 
 Code::~Code() {}
@@ -18,10 +27,10 @@ int Code::getRandomNumber() {
 	return rand() % 6 + 1;
 }
 
-// createCode should be called each time a new secret code is needed.
 void Code::createCode() {
 	for (int i = 0; i < 4; i++) {
 		code[i] = getRandomNumber();
+		digits[code[i]]++;
 	}
 }
 
@@ -29,26 +38,27 @@ void Code::createCode() {
 // 0 == not a match
 // 1 == correct color
 // 2 == correct color and column
-std::vector<int> Code::isCorrect(const int guesses[]) {
-	correct = std::vector<int>(4, 0);
-	bool[4] used = {0, 0, 0, 0};
+std::vector<int> Code::isCorrect(const int guess[]) {
+	std::vector<int> correct = std::vector<int>(4, 0);
+
+	std::map<int,int> digitsUsed;
+	for (int i = 0; i < 6; i++) {
+		digitsUsed[i] = 0;
+	}
 
 	for (int i = 0; i < 4; i++) {
-		if guess[i] == code[i] {
+		if (guess[i] == code[i]) {
 			correct[i] = 2;
-			used[i] = true;
+			digitsUsed[code[i]]++;
 		}
 	}
 
 	for (int i = 0; i < 4; i++) {
-		if (used[i]) {
-			continue;
-		}
 		for (int j = 0; j < 4; j++) {
-			if (correct[i] = 0 && !used[j]) {	
-				if (guess[i] == code[j]) {
+			if (correct[i] == 0) {
+				if (guess[i] == code[j] && digitsUsed[code[j]] < digits[code[j]]) {
 					correct[i] = 1;
-					used[j] = true;
+					digitsUsed[code[j]]++;
 				}
 			}
 		}
