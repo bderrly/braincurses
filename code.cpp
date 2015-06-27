@@ -34,11 +34,15 @@ void Code::createCode() {
 	}
 }
 
+std::vector<int> Code::getCode() {
+	return code;
+}
+
 // Each index will have either 0, 1, or 2.
 // 0 == not a match
 // 1 == correct color
 // 2 == correct color and column
-std::vector<int> Code::isCorrect(const int guess[]) {
+std::vector<int> Code::isCorrect(std::vector<int> guess) {
 	std::vector<int> correct = std::vector<int>(4, 0);
 
 	std::map<int,int> digitsUsed;

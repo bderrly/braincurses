@@ -8,11 +8,9 @@
 #include <map>
 #include <vector>
 
-enum Colors { RED, WHITE, YELLOW, GREEN, BLUE, PURPLE };
-
 class Code {
  private:
-  int code[4];
+	std::vector<int> code;
 	std::map<int,int> digits;
 	int getRandomNumber();
 
@@ -22,7 +20,8 @@ class Code {
   ~Code();
 
 	void createCode();
-	std::vector<int> isCorrect(const int []);
+	std::vector<int> getCode();
+	std::vector<int> isCorrect(std::vector<int> guess);
 };
 
 #endif  // CODE_H

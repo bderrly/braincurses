@@ -5,18 +5,21 @@
 #ifndef WINDOWS_H
 #define WINDOWS_H
 
-#include <cstring>
-#include <ncurses.h>
+#include "../code.h"
+
 #include <string>
-#include <term.h>
-#include "../braincurses.h"
+#include <vector>
+
+#include <ncurses.h>
 
 const int INPUT_LENGTH = 7;
 const std::string AUTHOR = "Brian Derr";
 const std::string COPYRIGHT = "(c) 2002";
 const std::string GAME_NAME = "BrainCurses";
 
-struct Winders {
+enum Colors {RED, WHITE, YELLOW, GREEN, BLUE, PURPLE};
+
+struct Windows {
   WINDOW *top_left;
   WINDOW *top_right;
   WINDOW *left;
@@ -26,24 +29,19 @@ struct Winders {
   WINDOW *slit;
 };
 
-WINDOW *create_newwin(int height, int width, int starty, int startx);
-void destroy_win(WINDOW *local_win);
-
-void initScreen(Winders *winders);
-void cleanUpWindow(WINDOW *local_win);
-bool getInput(Guess &g, int x, Winders *winders);
-void wrongInput(WINDOW *local_win, Guess &g, int inner);
-void dispGuesses(WINDOW *local_win, std::vector<int> guesses, int outer);
-void dispMarkers(WINDOW *local_win, int marker_arr[], int outer);
-bool isWinner(int marker_arr[]);
-void youWin(WINDOW *local_win);
-void youLose(WINDOW *local_win);
-void dispAnswers(WINDOW *local_win, int answer[]);
-bool playAgain(WINDOW *local_win);
-void closeCurses(Winders *winders);
-void printTopScores(WINDOW *local_win);
-
-extern void getScores(int scoreNum, char *name, int &score);
-extern int writeScores(int turns);
+void cleanUpWindow(WINDOW *window);
+void closeCurses(Windows *windows);
+WINDOW *createWindow(int height, int width, int starty, int startx);
+void destroyWindow(WINDOW *window);
+void displayAnswer(WINDOW *window, std::vector<int> code);
+void displayGuess(WINDOW *window, int y, std::vector<int> guess);
+void displayMarkers(WINDOW *window, int y, std::vector<int> markers);
+bool gameOverPlayAgain(WINDOW *window, bool winner);
+std::vector<int> getInput(WINDOW *window);
+bool initScreen(Windows *windows);
+bool isWinner(std::vector<int> guess);
+bool playAgain(WINDOW *window);
+void playGame(Windows *windows, int maxGuesses);
+void prepareGameBoard(Windows *windows, int maxGuesses);
 
 #endif  // WINDOWS_H

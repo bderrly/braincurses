@@ -5,7 +5,7 @@ LDLIBS += -lncurses
 
 all: braincurses
 
-braincurses: windows/windows.o braincurses.o 
+braincurses: windows/windows.o code.o 
 	$(LINK.cc) $^ ${LDLIBS} -o $@
 
 clean:
