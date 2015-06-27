@@ -103,54 +103,53 @@ void cleanUpWindow(WINDOW *window) {
 }
 
 std::vector<int> getInput(WINDOW *window) {
-	std::vector<int> guess = std::vector<int> (4, 0);
+	std::vector<int> guess (4, 0);
   char input;
  
-	for (int x = 0; x < 4; x++) {
-		while (true) {
-			input = mvwgetch(window, 1, 14 * (x + 1) - INPUT_LENGTH);
+	int x = 0;
+	while (x < 4) {
+		input = mvwgetch(window, 1, 14 * (x+1) - INPUT_LENGTH);
 
-			// TODO(brian): Need to add support for arrow keys and backspace/delete
-			// to change a prior response. Also, perhaps not setting the value in
-			// guess until after all input is confirmed.
-			switch (input) {
-				case 'r':
-					mvwaddstr(window, 1, 14 * (x+1) - INPUT_LENGTH, "red");
-					x++;
-					guess[x] = COLOR_RED;
-					break;
-				case 'w':
-					mvwaddstr(window, 1, 14 * (x+1) - INPUT_LENGTH, "white");
-					x++;
-					guess[x] = COLOR_WHITE;
-					break;
-				case 'b':
-					mvwaddstr(window, 1, 14 * (x+1) - INPUT_LENGTH, "blue");
-					x++;
-					guess[x] = COLOR_BLUE;
-					break;
-				case 'y':
-					mvwaddstr(window, 1, 14 * (x+1) - INPUT_LENGTH, "yellow");
-					x++;
-					guess[x] = COLOR_YELLOW;
-					break;
-				case 'g':
-					mvwaddstr(window, 1, 14 * (x+1) - INPUT_LENGTH, "green");
-					x++;
-					guess[x] = COLOR_GREEN;
-					break;
-				case 'p':
-					mvwaddstr(window, 1, 14 * (x+1) - INPUT_LENGTH, "purple");
-					x++;
-					guess[x] = COLOR_MAGENTA;
-					break;
-				default:
-					mvwdelch(window, 1, 14 * (x+1) - INPUT_LENGTH);
-					break;
-			}
+		// TODO(brian): Need to add support for arrow keys and backspace/delete
+		// to change a prior response. Also, perhaps not setting the value in
+		// guess until after all input is confirmed.
+		switch (input) {
+			case 'r':
+				mvwaddstr(window, 1, 14 * (x+1) - INPUT_LENGTH, "red");
+				guess.push_back(COLOR_RED);
+				x++;
+				break;
+			case 'w':
+				mvwaddstr(window, 1, 14 * (x+1) - INPUT_LENGTH, "white");
+				guess.push_back(COLOR_WHITE);
+				x++;
+				break;
+			case 'b':
+				mvwaddstr(window, 1, 14 * (x+1) - INPUT_LENGTH, "blue");
+				guess.push_back(COLOR_BLUE);
+				x++;
+				break;
+			case 'y':
+				mvwaddstr(window, 1, 14 * (x+1) - INPUT_LENGTH, "yellow");
+				guess.push_back(COLOR_YELLOW);
+				x++;
+				break;
+			case 'g':
+				mvwaddstr(window, 1, 14 * (x+1) - INPUT_LENGTH, "green");
+				guess.push_back(COLOR_GREEN);
+				x++;
+				break;
+			case 'p':
+				mvwaddstr(window, 1, 14 * (x+1) - INPUT_LENGTH, "purple");
+				guess.push_back(COLOR_MAGENTA);
+				x++;
+				break;
+			default:
+				mvwdelch(window, 1, 14 * (x+1) - INPUT_LENGTH);
+				break;
 		}
-		cleanUpWindow(window);
 	}
+	cleanUpWindow(window);
   return guess;
 }
 

@@ -29,7 +29,7 @@ int Code::getRandomNumber() {
 
 void Code::createCode() {
 	for (int i = 0; i < 4; i++) {
-		code[i] = getRandomNumber();
+		code.push_back(getRandomNumber());
 		digits[code[i]]++;
 	}
 }
@@ -43,7 +43,7 @@ std::vector<int> Code::getCode() {
 // 1 == correct color
 // 2 == correct color and column
 std::vector<int> Code::isCorrect(std::vector<int> guess) {
-	std::vector<int> correct = std::vector<int>(4, 0);
+	std::vector<int> correct (4, 0);
 
 	std::map<int,int> digitsUsed;
 	for (int i = 0; i < 6; i++) {
@@ -52,7 +52,7 @@ std::vector<int> Code::isCorrect(std::vector<int> guess) {
 
 	for (int i = 0; i < 4; i++) {
 		if (guess[i] == code[i]) {
-			correct[i] = 2;
+			correct.push_back(2);
 			digitsUsed[code[i]]++;
 		}
 	}
