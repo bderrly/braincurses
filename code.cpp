@@ -52,7 +52,7 @@ std::vector<int> Code::isCorrect(std::vector<int> guess) {
 
 	for (int i = 0; i < 4; i++) {
 		if (guess[i] == code[i]) {
-			correct.push_back(2);
+			correct[i] = 2;
 			digitsUsed[code[i]]++;
 		}
 	}

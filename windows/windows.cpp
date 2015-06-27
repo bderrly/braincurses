@@ -17,12 +17,12 @@ bool initScreen(Windows *windows) {
 		return false;
 	}
 	start_color();
-	init_pair(0, COLOR_RED, COLOR_BLACK);
-	init_pair(1, COLOR_WHITE, COLOR_BLACK);
-	init_pair(2, COLOR_YELLOW, COLOR_BLACK);
-	init_pair(3, COLOR_GREEN, COLOR_BLACK);
-	init_pair(4, COLOR_BLUE, COLOR_BLACK);
-	init_pair(5, COLOR_MAGENTA, COLOR_BLACK);
+	init_pair(RED, COLOR_RED, COLOR_BLACK);
+	init_pair(WHITE, COLOR_WHITE, COLOR_BLACK);
+	init_pair(YELLOW, COLOR_YELLOW, COLOR_BLACK);
+	init_pair(GREEN, COLOR_GREEN, COLOR_BLACK);
+	init_pair(BLUE, COLOR_BLUE, COLOR_BLACK);
+	init_pair(PURPLE, COLOR_MAGENTA, COLOR_BLACK);
 
 	cbreak();
 	return true;
@@ -103,7 +103,7 @@ void cleanUpWindow(WINDOW *window) {
 }
 
 std::vector<int> getInput(WINDOW *window) {
-	std::vector<int> guess (4, 0);
+	std::vector<int> guess;
   char input;
  
 	int x = 0;
@@ -116,32 +116,32 @@ std::vector<int> getInput(WINDOW *window) {
 		switch (input) {
 			case 'r':
 				mvwaddstr(window, 1, 14 * (x+1) - INPUT_LENGTH, "red");
-				guess.push_back(COLOR_RED);
+				guess.push_back(RED);
 				x++;
 				break;
 			case 'w':
 				mvwaddstr(window, 1, 14 * (x+1) - INPUT_LENGTH, "white");
-				guess.push_back(COLOR_WHITE);
+				guess.push_back(WHITE);
 				x++;
 				break;
 			case 'b':
 				mvwaddstr(window, 1, 14 * (x+1) - INPUT_LENGTH, "blue");
-				guess.push_back(COLOR_BLUE);
+				guess.push_back(BLUE);
 				x++;
 				break;
 			case 'y':
 				mvwaddstr(window, 1, 14 * (x+1) - INPUT_LENGTH, "yellow");
-				guess.push_back(COLOR_YELLOW);
+				guess.push_back(YELLOW);
 				x++;
 				break;
 			case 'g':
 				mvwaddstr(window, 1, 14 * (x+1) - INPUT_LENGTH, "green");
-				guess.push_back(COLOR_GREEN);
+				guess.push_back(GREEN);
 				x++;
 				break;
 			case 'p':
 				mvwaddstr(window, 1, 14 * (x+1) - INPUT_LENGTH, "purple");
-				guess.push_back(COLOR_MAGENTA);
+				guess.push_back(PURPLE);
 				x++;
 				break;
 			default:
@@ -198,7 +198,7 @@ void displayMarkers(WINDOW *window, int y, std::vector<int> correct) {
 bool isWinner(std::vector<int> correct) {
 	bool winner = true;
   for (int i = 0; i < 4; i++) {
-    if (!correct[i] == 2) {
+    if (correct[i] != 2) {
       winner = false;
 			break;
 		}
