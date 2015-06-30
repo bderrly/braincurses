@@ -30,7 +30,7 @@ struct Windows {
 };
 
 void cleanUpWindow(WINDOW *window);
-void closeCurses(Windows *windows);
+void closeCurses();
 WINDOW *createWindow(int height, int width, int starty, int startx);
 void destroyWindow(WINDOW *window);
 void displayAnswer(WINDOW *window, std::vector<int> code);

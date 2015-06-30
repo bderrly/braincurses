@@ -25,6 +25,8 @@ bool initScreen(Windows *windows) {
 	init_pair(PURPLE, COLOR_MAGENTA, COLOR_BLACK);
 
 	cbreak();
+	intrflush(stdscr, false);
+	atexit(closeCurses);
 	return true;
 }
 
@@ -70,14 +72,8 @@ void prepareGameBoard(Windows *windows, int maxGuesses) {
   doupdate();
 }
 
-void closeCurses(Windows *windows) {
-  destroyWindow(windows->top_left);
-  destroyWindow(windows->top_right);
-  destroyWindow(windows->left);
-  destroyWindow(windows->middle);
-  destroyWindow(windows->right);
-  destroyWindow(windows->bottom);
-  endwin();
+void closeCurses() {
+	endwin();
 }
 
 WINDOW *createWindow(int height, int width, int starty, int startx) {
@@ -285,7 +281,6 @@ int main(int argv, char *argc[]) {
 	}
 	prepareGameBoard(windows, maxGuesses);
 	playGame(windows, maxGuesses);
-	closeCurses(windows);
 	
   return 0;
 }
