@@ -5,6 +5,9 @@ LDLIBS += -lncurses
 
 all: braincurses
 
+debug: CXXFLAGS += -DDEBUG -ggdb
+debug: braincurses
+
 braincurses: windows/windows.o code.o 
 	$(LINK.cc) $^ ${LDLIBS} -o $@
 
