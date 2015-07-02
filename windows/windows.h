@@ -17,8 +17,6 @@ const std::string AUTHOR = "Brian Derr";
 const std::string COPYRIGHT = "(c) 2002";
 const std::string GAME_NAME = "BrainCurses";
 
-enum Colors {RED, WHITE, YELLOW, GREEN, BLUE, PURPLE};
-
 struct Windows {
   WINDOW *top_left;
   WINDOW *top_right;

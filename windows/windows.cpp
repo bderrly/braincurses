@@ -17,13 +17,10 @@ bool initScreen(Windows *windows) {
 		return false;
 	}
 	start_color();
-	init_pair(RED, COLOR_RED, COLOR_BLACK);
-	init_pair(WHITE, COLOR_WHITE, COLOR_BLACK);
-	init_pair(YELLOW, COLOR_YELLOW, COLOR_BLACK);
-	init_pair(GREEN, COLOR_GREEN, COLOR_BLACK);
-	init_pair(BLUE, COLOR_BLUE, COLOR_BLACK);
-	init_pair(PURPLE, COLOR_MAGENTA, COLOR_BLACK);
-
+	use_default_colors();
+	for (int i = 0; i < COLORS; i++) {
+		init_pair(i, i, -1);
+	}
 	cbreak();
 	noecho();
 	intrflush(stdscr, FALSE);
@@ -43,16 +40,27 @@ void prepareGameBoard(Windows *windows, int maxGuesses) {
   windows->slit = createWindow(17, 2, 3, 17);
 
   mvwaddstr(windows->top_left, 1, 4, GAME_NAME.c_str());
-  //mvwaddstr(windows->right, 18, 2, COPYRIGHT.c_str());
-  //mvwaddstr(windows->right, 18, 11, AUTHOR.c_str());
   mvwaddstr(windows->right, 1, 2, "Colors: ");
-  mvwaddstr(windows->right, 2, 2, "RED, BLUE, YELLOW");
-  mvwaddstr(windows->right, 3, 2, "WHITE, GREEN, PURPLE");
-  mvwaddstr(windows->right, 5, 2, "Type \"quit\" to end");
-  mvwaddstr(windows->right, 6, 2, "the game.");
-  mvwaddstr(windows->right, 8, 2, "Remember to hit the");
-  mvwaddstr(windows->right, 9, 2, "enter key after each");
-  mvwaddstr(windows->right, 10, 2, "guess!");
+	wattron(windows->right, COLOR_PAIR(COLOR_RED));
+	mvwaddstr(windows->right, 2, 2, "RED");
+	wattroff(windows->right, COLOR_PAIR(COLOR_RED));
+	waddstr(windows->right, ", ");
+	wattron(windows->right, COLOR_PAIR(COLOR_BLUE));
+	waddstr(windows->right, "BLUE");
+	wattroff(windows->right, COLOR_PAIR(COLOR_BLUE));
+	waddstr(windows->right, ", ");
+	wattron(windows->right, COLOR_PAIR(COLOR_YELLOW));
+	waddstr(windows->right, "YELLOW");
+	wattroff(windows->right, COLOR_PAIR(COLOR_YELLOW));
+
+	mvwaddstr(windows->right, 3, 2, "WHITE, ");
+	wattron(windows->right, COLOR_PAIR(COLOR_GREEN));
+	waddstr(windows->right, "GREEN");
+	wattroff(windows->right, COLOR_PAIR(COLOR_GREEN));
+	waddstr(windows->right, ", ");
+	wattron(windows->right, COLOR_PAIR(COLOR_MAGENTA));
+	waddstr(windows->right, "MAGENTA");
+	wattroff(windows->right, COLOR_PAIR(COLOR_MAGENTA));
   mvwaddstr(windows->top_right, 1, 3, "X");
   mvwaddstr(windows->top_right, 1, 7, "X");
   mvwaddstr(windows->top_right, 1, 11, "X");
@@ -101,7 +109,7 @@ void cleanUpWindow(WINDOW *window, bool erase) {
 
 std::vector<int> getInput(WINDOW *window) {
 	std::string delStr (INPUT_LENGTH, ' ');
-	int guessInput[4] = {-1, -1, -1, -1};
+	int guessInput[4] = {NONE, NONE, NONE, NONE};
 	int column[4] = {4, 19, 34, 49};
   int input;
 
@@ -113,37 +121,37 @@ std::vector<int> getInput(WINDOW *window) {
 			case 'r':
 				mvwaddstr(window, 1, column[x], delStr.c_str());
 				mvwaddstr(window, 1, column[x], "red");
-				guessInput[x] = RED;
-				x++;
-				break;
-			case 'w':
-				mvwaddstr(window, 1, column[x], delStr.c_str());
-				mvwaddstr(window, 1, column[x], "white");
-				guessInput[x] = WHITE;
-				x++;
-				break;
-			case 'b':
-				mvwaddstr(window, 1, column[x], delStr.c_str());
-				mvwaddstr(window, 1, column[x], "blue");
-				guessInput[x] = BLUE;
-				x++;
-				break;
-			case 'y':
-				mvwaddstr(window, 1, column[x], delStr.c_str());
-				mvwaddstr(window, 1, column[x], "yellow");
-				guessInput[x] = YELLOW;
+				guessInput[x] = COLOR_RED;
 				x++;
 				break;
 			case 'g':
 				mvwaddstr(window, 1, column[x], delStr.c_str());
 				mvwaddstr(window, 1, column[x], "green");
-				guessInput[x] = GREEN;
+				guessInput[x] = COLOR_GREEN;
 				x++;
 				break;
-			case 'p':
+			case 'y':
 				mvwaddstr(window, 1, column[x], delStr.c_str());
-				mvwaddstr(window, 1, column[x], "purple");
-				guessInput[x] = PURPLE;
+				mvwaddstr(window, 1, column[x], "yellow");
+				guessInput[x] = COLOR_YELLOW;
+				x++;
+				break;
+			case 'b':
+				mvwaddstr(window, 1, column[x], delStr.c_str());
+				mvwaddstr(window, 1, column[x], "blue");
+				guessInput[x] = COLOR_BLUE;
+				x++;
+				break;
+			case 'm':
+				mvwaddstr(window, 1, column[x], delStr.c_str());
+				mvwaddstr(window, 1, column[x], "magenta");
+				guessInput[x] = COLOR_MAGENTA;
+				x++;
+				break;
+			case 'w':
+				mvwaddstr(window, 1, column[x], delStr.c_str());
+				mvwaddstr(window, 1, column[x], "white");
+				guessInput[x] = COLOR_WHITE;
 				x++;
 				break;
 			case KEY_LEFT:
@@ -193,7 +201,8 @@ void displayGuess(WINDOW *window, int y, std::vector<int> guess) {
     else if (i == 3)
       x = 14;
 
-		mvwaddch(window, y, x, 'X' | COLOR_PAIR(guess[i]) | A_BOLD);
+		wattron(window, A_BOLD);
+		mvwaddch(window, y, x, 'X' | COLOR_PAIR(guess[i]));
     wrefresh(window);
   }
 }
@@ -211,11 +220,12 @@ void displayMarkers(WINDOW *window, int y, std::vector<int> correct) {
     else if (i == 3)
       x = 14;
 
+		wattron(window, A_BOLD);
     if (correct[i] == 2) {
-      mvwaddch(window, y, x, 'X' | COLOR_PAIR(RED) | A_BOLD);
+      mvwaddch(window, y, x, 'X' | COLOR_PAIR(COLOR_RED));
 		}
 		if (correct[i] == 1) {
-      mvwaddch(window, y, x, 'X' | COLOR_PAIR(WHITE) | A_BOLD);
+      mvwaddch(window, y, x, 'X' | COLOR_PAIR(COLOR_WHITE));
 		}
   }
   wrefresh(window);
