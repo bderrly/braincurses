@@ -25,7 +25,8 @@ bool initScreen(Windows *windows) {
 	init_pair(PURPLE, COLOR_MAGENTA, COLOR_BLACK);
 
 	cbreak();
-	intrflush(stdscr, false);
+	noecho();
+	intrflush(stdscr, FALSE);
 	atexit(closeCurses);
 	return true;
 }
@@ -40,8 +41,6 @@ void prepareGameBoard(Windows *windows, int maxGuesses) {
   windows->right = createWindow(20, 24, 0, 36);
   windows->bottom = createWindow(3, 60, 20, 0);
   windows->slit = createWindow(17, 2, 3, 17);
-
-  keypad(windows->bottom, TRUE);
 
   mvwaddstr(windows->top_left, 1, 4, GAME_NAME.c_str());
   //mvwaddstr(windows->right, 18, 2, COPYRIGHT.c_str());
@@ -92,60 +91,91 @@ void destroyWindow(WINDOW *local_win) {
   delwin(local_win);
 }
 
-void cleanUpWindow(WINDOW *window) {
-  werase(window);
+void cleanUpWindow(WINDOW *window, bool erase) {
+	if (erase) {
+		werase(window);
+	}
   box(window, 0, 0);
   wrefresh(window);
 }
 
 std::vector<int> getInput(WINDOW *window) {
-	std::vector<int> guess;
-  char input;
- 
-	int x = 0;
-	while (x < 4) {
-		input = mvwgetch(window, 1, 14 * (x+1) - INPUT_LENGTH);
+	std::string delStr (INPUT_LENGTH, ' ');
+	int guessInput[4] = {-1, -1, -1, -1};
+	int column[4] = {4, 19, 34, 49};
+  int input;
 
-		// TODO(brian): Need to add support for arrow keys and backspace/delete
-		// to change a prior response. Also, perhaps not setting the value in
-		// guess until after all input is confirmed.
+	keypad(window, TRUE);
+	int x = 0;
+	while (true) {
+		input = mvwgetch(window, 1, column[x]);
 		switch (input) {
 			case 'r':
-				mvwaddstr(window, 1, 14 * (x+1) - INPUT_LENGTH, "red");
-				guess.push_back(RED);
+				mvwaddstr(window, 1, column[x], delStr.c_str());
+				mvwaddstr(window, 1, column[x], "red");
+				guessInput[x] = RED;
 				x++;
 				break;
 			case 'w':
-				mvwaddstr(window, 1, 14 * (x+1) - INPUT_LENGTH, "white");
-				guess.push_back(WHITE);
+				mvwaddstr(window, 1, column[x], delStr.c_str());
+				mvwaddstr(window, 1, column[x], "white");
+				guessInput[x] = WHITE;
 				x++;
 				break;
 			case 'b':
-				mvwaddstr(window, 1, 14 * (x+1) - INPUT_LENGTH, "blue");
-				guess.push_back(BLUE);
+				mvwaddstr(window, 1, column[x], delStr.c_str());
+				mvwaddstr(window, 1, column[x], "blue");
+				guessInput[x] = BLUE;
 				x++;
 				break;
 			case 'y':
-				mvwaddstr(window, 1, 14 * (x+1) - INPUT_LENGTH, "yellow");
-				guess.push_back(YELLOW);
+				mvwaddstr(window, 1, column[x], delStr.c_str());
+				mvwaddstr(window, 1, column[x], "yellow");
+				guessInput[x] = YELLOW;
 				x++;
 				break;
 			case 'g':
-				mvwaddstr(window, 1, 14 * (x+1) - INPUT_LENGTH, "green");
-				guess.push_back(GREEN);
+				mvwaddstr(window, 1, column[x], delStr.c_str());
+				mvwaddstr(window, 1, column[x], "green");
+				guessInput[x] = GREEN;
 				x++;
 				break;
 			case 'p':
-				mvwaddstr(window, 1, 14 * (x+1) - INPUT_LENGTH, "purple");
-				guess.push_back(PURPLE);
+				mvwaddstr(window, 1, column[x], delStr.c_str());
+				mvwaddstr(window, 1, column[x], "purple");
+				guessInput[x] = PURPLE;
 				x++;
 				break;
+			case KEY_LEFT:
+				if (x > 0) {
+					x--;
+					wmove(window, 1, column[x]);
+				}
+				break;
+			case KEY_RIGHT:
+				if (x < 3) {
+					wmove(window, 1, column[x]);
+					x++;
+				}
+				break;
+			case KEY_BACKSPACE:
+			case KEY_DC:
+				if (x > 0 && x <= 4) {
+					x--;
+					mvwaddstr(window, 1, column[x], delStr.c_str());
+					guessInput[x] = -1;
+				}
+				break;
 			default:
-				mvwdelch(window, 1, 14 * (x+1) - INPUT_LENGTH);
 				break;
 		}
+		wrefresh(window);
+		if (x == 4) {
+			break;
+		}
 	}
-	cleanUpWindow(window);
+	cleanUpWindow(window, true);
+	std::vector<int> guess (guessInput, guessInput + sizeof(guessInput) / sizeof(int));
   return guess;
 }
 
@@ -203,7 +233,7 @@ bool isWinner(std::vector<int> correct) {
 }
 
 bool gameOverPlayAgain(WINDOW *window, bool winner) {
-  cleanUpWindow(window);
+  cleanUpWindow(window, true);
 	if (winner) {
 		mvwaddstr(window, 1, 1, "You win the game! Congratulations!");
 	} else {
@@ -232,11 +262,10 @@ void displayAnswer(WINDOW *window, std::vector<int> answer) {
 }
 
 bool playAgain(WINDOW *window) {
-  cleanUpWindow(window);
+  cleanUpWindow(window, true);
   mvwaddstr(window, 1, 1, "Would you like to play again? ([Y]/n) ");
   wrefresh(window);
 
-	//nocbreak();
   char again = wgetch(window);
 
   return (tolower(again) == 'y' ? true : false);

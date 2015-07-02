@@ -12,7 +12,7 @@
 
 #include <ncurses.h>
 
-const int INPUT_LENGTH = 7;
+const int INPUT_LENGTH = 6;
 const std::string AUTHOR = "Brian Derr";
 const std::string COPYRIGHT = "(c) 2002";
 const std::string GAME_NAME = "BrainCurses";
@@ -29,7 +29,7 @@ struct Windows {
   WINDOW *slit;
 };
 
-void cleanUpWindow(WINDOW *window);
+void cleanUpWindow(WINDOW *window, bool erase);
 void closeCurses();
 WINDOW *createWindow(int height, int width, int starty, int startx);
 void destroyWindow(WINDOW *window);
