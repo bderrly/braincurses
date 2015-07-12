@@ -1,4 +1,4 @@
-CXXFLAGS += -Wall
+CXXFLAGS += -Wall -std=c++11
 LDLIBS += -lncurses
 
 .PHONY: all clean
