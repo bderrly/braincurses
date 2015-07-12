@@ -5,13 +5,12 @@
 #ifndef WINDOWS_H
 #define WINDOWS_H
 
-#include "../code.h"
-
+#include <ncurses.h>
 #include <string>
 #include <vector>
 #include <unordered_map>
 
-#include <ncurses.h>
+#include "code.h"
 
 const int INPUT_LENGTH = 7;
 const std::string AUTHOR = "Brian Derr";
@@ -33,7 +32,7 @@ bool initScreen(Windows &windows);
 bool isWinner(std::vector<int> guess);
 bool playAgain(WINDOW *window);
 bool playGame(Windows &windows, Code code, int maxGuesses);
-void prepareGameBoard(Windows &windows, int maxGuesses);
+void prepareGameBoard(Windows &windows, int maxGuesses, Code code);
 void wipeGameBoard(Windows &windows);
 
 #endif

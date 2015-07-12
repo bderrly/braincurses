@@ -1,16 +1,16 @@
 CXXFLAGS += -Wall -std=c++11
 LDLIBS += -lncurses
 
-.PHONY: all clean
+.PHONY: all clean debug
 
 all: braincurses
 
 debug: CXXFLAGS += -DDEBUG -ggdb
 debug: braincurses
 
-braincurses: windows/windows.o code.o 
+braincurses: braincurses.o code.o windows.o
 	$(LINK.cc) $^ ${LDLIBS} -o $@
 
 clean:
 	@- $(RM) braincurses
-	@- $(RM) *.o windows/*.o
+	@- $(RM) *.o
