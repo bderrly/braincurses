@@ -28,6 +28,9 @@ int Code::getRandomNumber() {
 }
 
 void Code::createCode() {
+	if (code.size() > 0) {
+		code.clear();
+	}
 	for (int i = 0; i < 4; i++) {
 		code.push_back(getRandomNumber());
 		digits[code[i]]++;
