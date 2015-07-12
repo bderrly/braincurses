@@ -24,4 +24,4 @@ class Code {
 	std::vector<int> isCorrect(std::vector<int> guess);
 };
 
-#endif  // CODE_H
+#endif
