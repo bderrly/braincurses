@@ -12,23 +12,23 @@
 #define DEFAULT_NUM_GUESSES 10
 
 bool initScreen(Windows *windows) {
-  initscr();
+  if (!initscr()) {
+		return false;
+	}
 	if (!has_colors()) {
 		return false;
 	}
 	start_color();
+	if (COLORS < 8) {
+		return false;
+	}
 	use_default_colors();
-	for (int i = 0; i < COLORS; i++) {
+	for (int i = 0; i < 8; i++) {
 		init_pair(i, i, -1);
 	}
 	cbreak();
 	noecho();
 	intrflush(stdscr, FALSE);
-	atexit(closeCurses);
-	return true;
-}
-
-void prepareGameBoard(Windows *windows, int maxGuesses) {
 	curs_set(1); // visibile cursor 
 
   windows->top_left = createWindow(3, 18, 0, 0);
@@ -39,28 +39,46 @@ void prepareGameBoard(Windows *windows, int maxGuesses) {
   windows->bottom = createWindow(3, 60, 20, 0);
   windows->slit = createWindow(17, 2, 3, 17);
 
+	atexit(closeCurses);
+	return true;
+}
+
+void prepareGameBoard(Windows *windows, int maxGuesses) {
+
   mvwaddstr(windows->top_left, 1, 4, GAME_NAME.c_str());
   mvwaddstr(windows->right, 1, 2, "Colors: ");
+	wattron(windows->right, A_BOLD);
+
 	wattron(windows->right, COLOR_PAIR(COLOR_RED));
 	mvwaddstr(windows->right, 2, 2, "RED");
 	wattroff(windows->right, COLOR_PAIR(COLOR_RED));
+
 	waddstr(windows->right, ", ");
+
 	wattron(windows->right, COLOR_PAIR(COLOR_BLUE));
 	waddstr(windows->right, "BLUE");
 	wattroff(windows->right, COLOR_PAIR(COLOR_BLUE));
+
 	waddstr(windows->right, ", ");
+
 	wattron(windows->right, COLOR_PAIR(COLOR_YELLOW));
 	waddstr(windows->right, "YELLOW");
 	wattroff(windows->right, COLOR_PAIR(COLOR_YELLOW));
 
 	mvwaddstr(windows->right, 3, 2, "WHITE, ");
+
 	wattron(windows->right, COLOR_PAIR(COLOR_GREEN));
 	waddstr(windows->right, "GREEN");
 	wattroff(windows->right, COLOR_PAIR(COLOR_GREEN));
+
 	waddstr(windows->right, ", ");
+
 	wattron(windows->right, COLOR_PAIR(COLOR_MAGENTA));
 	waddstr(windows->right, "MAGENTA");
 	wattroff(windows->right, COLOR_PAIR(COLOR_MAGENTA));
+
+	wattroff(windows->right, A_BOLD);
+
   mvwaddstr(windows->top_right, 1, 3, "X");
   mvwaddstr(windows->top_right, 1, 7, "X");
   mvwaddstr(windows->top_right, 1, 11, "X");
@@ -109,7 +127,7 @@ void cleanUpWindow(WINDOW *window, bool erase) {
 
 std::vector<int> getInput(WINDOW *window) {
 	std::string delStr (INPUT_LENGTH, ' ');
-	int guessInput[4] = {NONE, NONE, NONE, NONE};
+	int guessInput[4] = {-1, -1, -1, -1};
 	int column[4] = {4, 19, 34, 49};
   int input;
 
@@ -191,6 +209,7 @@ void displayGuess(WINDOW *window, int y, std::vector<int> guess) {
   int i, x;
   y = 15 - y;
 
+	wattron(window, A_BOLD);
   for (i = 0; i < 4; i++) {
     if (i == 0)
       x = 2;
@@ -201,15 +220,17 @@ void displayGuess(WINDOW *window, int y, std::vector<int> guess) {
     else if (i == 3)
       x = 14;
 
-		wattron(window, A_BOLD);
 		mvwaddch(window, y, x, 'X' | COLOR_PAIR(guess[i]));
-    wrefresh(window);
   }
+	wattroff(window, A_BOLD);
+	wrefresh(window);
 }
 
 void displayMarkers(WINDOW *window, int y, std::vector<int> correct) {
   int i, x;
   y = 15 - y;
+
+	wattron(window, A_BOLD);
   for (i = 0; i < 4; i++) {
     if (i == 0)
       x = 2;
@@ -220,7 +241,6 @@ void displayMarkers(WINDOW *window, int y, std::vector<int> correct) {
     else if (i == 3)
       x = 14;
 
-		wattron(window, A_BOLD);
     if (correct[i] == 2) {
       mvwaddch(window, y, x, 'X' | COLOR_PAIR(COLOR_RED));
 		}
@@ -228,6 +248,7 @@ void displayMarkers(WINDOW *window, int y, std::vector<int> correct) {
       mvwaddch(window, y, x, 'X' | COLOR_PAIR(COLOR_WHITE));
 		}
   }
+	wattroff(window, A_BOLD);
   wrefresh(window);
 }
 
@@ -318,6 +339,7 @@ int main(int argv, char *argc[]) {
          << "Gameplay is not possible without colors." << std::endl;
     exit(1);
 	}
+
 	prepareGameBoard(windows, maxGuesses);
 	playGame(windows, maxGuesses);
 	
