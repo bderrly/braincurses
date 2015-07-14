@@ -9,7 +9,7 @@
 
 #define DEFAULT_NUM_GUESSES 10
 
-int main(int argv, char *argc[]) {
+int main(int argc, char *argv[]) {
   int maxGuesses = (argc > 1) ? atoi(argv[1]) : DEFAULT_NUM_GUESSES;
   if (maxGuesses <= 0) maxGuesses = DEFAULT_NUM_GUESSES;
   if (maxGuesses > 15) maxGuesses = 15;
