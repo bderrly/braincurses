@@ -191,14 +191,14 @@ std::vector<int> getInput(WINDOW *window, int codeLength) {
 				}
 				break;
 			case KEY_RIGHT:
-				if (x < 3) {
+				if (x < codeLength) {
 					wmove(window, 1, column[x]);
 					x++;
 				}
 				break;
 			case KEY_BACKSPACE:
 			case KEY_DC:
-				if (x > 0 && x <= 4) {
+				if (x > 0 && x <= codeLength) {
 					x--;
 					mvwaddstr(window, 1, column[x], delStr.c_str());
 					guessInput[x] = -1;
@@ -265,7 +265,7 @@ void displayMarkers(WINDOW *window, int y, std::vector<int> correct) {
 
 bool isWinner(std::vector<int> correct) {
 	bool winner = true;
-  for (int i = 0; i < 4; i++) {
+  for (unsigned i = 0; i < correct.size(); i++) {
     if (correct[i] != 2) {
       winner = false;
 			break;

@@ -16,6 +16,7 @@ Code::Code() {
 
 Code::Code(int seed) {
 	srand(seed);
+	codeLength = DEFAULT_CODE_LENGTH;
 	for (int i = 0; i < 6; i++) {
 		digits[i] = 0;
 	}
