@@ -31,7 +31,7 @@ void Code::createCode() {
 	if (code.size() > 0) {
 		code.clear();
 	}
-	for (int i = 0; i < 4; i++) {
+	for (int i = 0; i < codeLength; i++) {
 		code.push_back(getRandomNumber());
 		digits[code[i]]++;
 	}
@@ -41,27 +41,32 @@ std::vector<int> Code::getCode() {
 	return code;
 }
 
+int Code::getCodeLength() {
+	return codeLength;
+}
+
 // Each index will have either 0, 1, or 2.
 // 0 == not a match
 // 1 == correct color
 // 2 == correct color and column
 std::vector<int> Code::isCorrect(std::vector<int> guess) {
-	std::vector<int> correct (4, 0);
+	std::vector<int> correct (guess.size(), 0);
 
+	unsigned i, j;
 	std::map<int,int> digitsUsed;
-	for (int i = 0; i < 6; i++) {
+	for (i = 0; i < guess.size(); i++) {
 		digitsUsed[i] = 0;
 	}
 
-	for (int i = 0; i < 4; i++) {
+	for (i = 0; i < guess.size(); i++) {
 		if (guess[i] == code[i]) {
 			correct[i] = 2;
 			digitsUsed[code[i]]++;
 		}
 	}
 
-	for (int i = 0; i < 4; i++) {
-		for (int j = 0; j < 4; j++) {
+	for (i = 0; i < guess.size(); i++) {
+		for (j = 0; j < guess.size(); j++) {
 			if (correct[i] == 0) {
 				if (guess[i] == code[j] && digitsUsed[code[j]] < digits[code[j]]) {
 					correct[i] = 1;
@@ -71,4 +76,8 @@ std::vector<int> Code::isCorrect(std::vector<int> guess) {
 		}
 	}
 	return correct;
+}
+
+void Code::setCodeLength(int codeLength) {
+	this->codeLength = codeLength;
 }

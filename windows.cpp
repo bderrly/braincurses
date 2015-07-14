@@ -1,5 +1,5 @@
 /* windows.cpp
- * Copyright © 2002, Brian Derr <brian@derrclan.com>
+ * Copyright © 2002–2015, Brian Derr <brian@derrclan.com>
  */
 
 #include "windows.h"
@@ -8,6 +8,11 @@
 #include <string>
 #include <vector>
 
+
+const std::unordered_map<int, std::vector<int>> codePosition = {
+	{4, {2, 6, 10, 14}},
+	{5, {2, 5, 8, 11, 14}},
+	{6, {3, 5, 7, 9, 11, 13}}};
 
 bool initScreen(Windows &windows) {
   if (!initscr()) {
@@ -83,7 +88,7 @@ void prepareGameBoard(Windows &windows, int maxGuesses, Code code) {
 
 	wattroff(windows["info"], A_BOLD);
 
-	displayCode(windows["code"], code.getCode(), false);
+	displayCode(windows["code"], code, false);
 
   char guessLabel[3];
   for (int i = 1; i <= maxGuesses; i++) {
@@ -131,11 +136,11 @@ void wipeGameBoard(Windows &windows) {
 	}
 }
 
-
-std::vector<int> getInput(WINDOW *window) {
+std::vector<int> getInput(WINDOW *window, int codeLength) {
 	std::string delStr (INPUT_LENGTH, ' ');
-	int guessInput[4] = {-1, -1, -1, -1};
-	int column[4] = {4, 19, 34, 49};
+	std::vector<int> guessInput (codeLength, -1);
+	//int column[4] = {4, 19, 34, 49};
+	int column[6] = {2, 11, 20, 29, 38, 47};
   int input;
 
 	keypad(window, TRUE);
@@ -203,60 +208,45 @@ std::vector<int> getInput(WINDOW *window) {
 				break;
 		}
 		wrefresh(window);
-		if (x == 4) {
+		if (x == codeLength) {
 			break;
 		}
 	}
 	cleanUpWindow(window, true);
-	std::vector<int> guess (guessInput, guessInput + sizeof(guessInput) / sizeof(int));
-  return guess;
+  return guessInput;
 }
 
 void displayGuess(WINDOW *window, int y, std::vector<int> guess) {
-  int i, x;
   y = 15 - y;
 
 	wattron(window, A_BOLD);
-  for (i = 0; i < 4; i++) {
-    if (i == 0)
-      x = 2;
-    else if (i == 1)
-      x = 6;
-    else if (i == 2)
-      x = 10;
-    else if (i == 3)
-      x = 14;
-
+	int i = 0;
+	for (auto x : codePosition.at(guess.size())) {
 		mvwaddch(window, y, x, 'X' | COLOR_PAIR(guess[i]));
+		i++;
   }
 	wattroff(window, A_BOLD);
 	wrefresh(window);
 }
 
 void displayMarkers(WINDOW *window, int y, std::vector<int> correct) {
-  int i, x, red, white;
+  int i, red, white;
 	red = white = 0;
   y = 15 - y;
 
-  for (i = 0; i < 4; i++) {
-      if (correct[i] == 2) {
+	i = 0;
+	for (auto c : correct) {
+		if (c == 2) {
 			red++;
-		} else if (correct[i] == 1) {
+		} else if (c == 1) {
 			white++;
 		}
+		i++;
   }
 
 	wattron(window, A_BOLD);
-	for (i = 0; i < 4; i++) {
-		if (i == 0)
-      x = 2;
-    else if (i == 1)
-      x = 6;
-    else if (i == 2)
-      x = 10;
-    else if (i == 3)
-      x = 14;
-
+	i = 0;
+	for (auto x : codePosition.at(correct.size())) {
 		if (red > 0) {
 			mvwaddch(window, y, x, 'X' | COLOR_PAIR(COLOR_RED));
 			red--;
@@ -267,6 +257,7 @@ void displayMarkers(WINDOW *window, int y, std::vector<int> correct) {
 			white--;
 			continue;
 		}
+		i++;
 	}
 	wattroff(window, A_BOLD);
   wrefresh(window);
@@ -294,27 +285,19 @@ bool gameOverPlayAgain(WINDOW *window, bool winner) {
 	return playAgain(window);
 }
 
-void displayCode(WINDOW *window, std::vector<int> code, bool colored) {
-  int i, x;
-  for (i = 0; i < 4; i++) {
-    if (i == 0)
-      x = 2;
-    else if (i == 1)
-      x = 6;
-    else if (i == 2)
-      x = 10;
-    else if (i == 3)
-      x = 14;
-
+void displayCode(WINDOW *window, Code code, bool colored) {
+	int i = 0;
+	for (auto x : codePosition.at(code.getCodeLength())) {
 #ifdef DEBUG
-		mvwaddch(window, 1, x, 'X' | COLOR_PAIR(code[i]) | A_BOLD);
+		mvwaddch(window, 1, x, 'X' | COLOR_PAIR(code.getCode()[i]) | A_BOLD);
 #else
 		if (colored) {
-			mvwaddch(window, 1, x, 'X' | COLOR_PAIR(code[i]) | A_BOLD);
+			mvwaddch(window, 1, x, 'X' | COLOR_PAIR(code.getCode()[i]) | A_BOLD);
 		} else {
 			mvwaddch(window, 1, x, 'X');
 		}
 #endif
+		i++;
   }
 	wrefresh(window);
 }
@@ -332,7 +315,7 @@ bool playGame(Windows &windows, Code code, int maxGuesses) {
 	bool winner = false;
 	std::vector<int> correct;
   for (int i = 0; i < maxGuesses; i++) {
-		std::vector<int> guess = getInput(windows["input"]);
+		std::vector<int> guess = getInput(windows["input"], code.getCodeLength());
 		correct = code.isCorrect(guess);
 
     displayGuess(windows["guesses"], i, guess);

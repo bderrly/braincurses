@@ -8,9 +8,13 @@
 #include <map>
 #include <vector>
 
+
+const int DEFAULT_CODE_LENGTH = 4;
+
 class Code {
  private:
 	std::vector<int> code;
+	int codeLength;
 	std::map<int,int> digits;
 	int getRandomNumber();
 
@@ -21,7 +25,9 @@ class Code {
 
 	void createCode();
 	std::vector<int> getCode();
+	int getCodeLength();
 	std::vector<int> isCorrect(std::vector<int> guess);
+	void setCodeLength(int codeLength);
 };
 
 #endif
