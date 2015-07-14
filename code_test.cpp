@@ -1,3 +1,7 @@
+/* code_test.cpp
+ * Copyright © 2015, Brian Derr <brian@derrclan.com>
+ */
+
 #include "code.h"
 #include "test/littletest.hpp"
 

@@ -1,3 +1,7 @@
+/* braincurses.cpp
+ * Copyright © 2015, Brian Derr <brian@derrclan.com>
+ */
+
 #include <iostream>
 
 #include "code.h"
