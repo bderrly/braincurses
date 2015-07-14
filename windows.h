@@ -13,8 +13,6 @@
 #include "code.h"
 
 const int INPUT_LENGTH = 7;
-const std::string AUTHOR = "Brian Derr";
-const std::string COPYRIGHT = "(c) 2002";
 const std::string GAME_NAME = "BrainCurses";
 
 typedef std::unordered_map<std::string, WINDOW*> Windows;
