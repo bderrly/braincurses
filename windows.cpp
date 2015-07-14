@@ -34,20 +34,20 @@ bool initScreen(Windows &windows) {
 	intrflush(stdscr, FALSE);
 	curs_set(1); // visibile cursor 
 
-	windows.emplace("header", createWindow(3, 18, 0, 0));
+	windows.emplace("header", createWindow(3, 21, 0, 0));
 	windows.emplace("markers", createWindow(17, 17, 3, 0));
-	windows.emplace("guesses", createWindow(17, 17, 3, 19));
-	windows.emplace("code", createWindow(3, 18, 0, 18));
-	windows.emplace("watermark", createWindow(17, 2, 3, 17));
+	windows.emplace("guesses", createWindow(17, 17, 3, 21));
+	windows.emplace("code", createWindow(3, 17, 0, 21));
+	windows.emplace("watermark", createWindow(17, 4, 3, 17));
 	windows.emplace("input", createWindow(3, 60, 20, 0));
-	windows.emplace("info", createWindow(20, 24, 0, 36));
+	windows.emplace("info", createWindow(20, 22, 0, 38));
 
 	atexit(closeCurses);
 	return true;
 }
 
 void prepareGameBoard(Windows &windows, int maxGuesses, Code code) {
-  mvwaddstr(windows["header"], 1, 4, GAME_NAME.c_str());
+  mvwaddstr(windows["header"], 1, 5, GAME_NAME.c_str());
 	mvwaddstr(windows["info"], 1, 2, "Colors: ");
 	wattron(windows["info"], A_BOLD);
 
@@ -63,15 +63,17 @@ void prepareGameBoard(Windows &windows, int maxGuesses, Code code) {
 
 	waddstr(windows["info"], ", ");
 
-	wattron(windows["info"], COLOR_PAIR(COLOR_YELLOW));
-	waddstr(windows["info"], "YELLOW");
-	wattroff(windows["info"], COLOR_PAIR(COLOR_YELLOW));
-
 	mvwaddstr(windows["info"], 3, 2, "WHITE, ");
 
 	wattron(windows["info"], COLOR_PAIR(COLOR_GREEN));
 	waddstr(windows["info"], "GREEN");
 	wattroff(windows["info"], COLOR_PAIR(COLOR_GREEN));
+
+	waddstr(windows["info"], ", ");
+
+	wattron(windows["info"], COLOR_PAIR(COLOR_YELLOW));
+	mvwaddstr(windows["info"], 4, 2, "YELLOW");
+	wattroff(windows["info"], COLOR_PAIR(COLOR_YELLOW));
 
 	waddstr(windows["info"], ", ");
 
@@ -86,7 +88,7 @@ void prepareGameBoard(Windows &windows, int maxGuesses, Code code) {
   char guessLabel[3];
   for (int i = 1; i <= maxGuesses; i++) {
     snprintf(guessLabel, 3, "%2d", i);
-    mvwaddstr(windows["watermark"], 16 - i, 0, guessLabel);
+    mvwaddstr(windows["watermark"], 16 - i, 1, guessLabel);
   }
 
   wmove(windows["input"], 1, 15);
@@ -296,13 +298,13 @@ void displayCode(WINDOW *window, std::vector<int> code, bool colored) {
   int i, x;
   for (i = 0; i < 4; i++) {
     if (i == 0)
-      x = 3;
+      x = 2;
     else if (i == 1)
-      x = 7;
+      x = 6;
     else if (i == 2)
-      x = 11;
+      x = 10;
     else if (i == 3)
-      x = 15;
+      x = 14;
 
 #ifdef DEBUG
 		mvwaddch(window, 1, x, 'X' | COLOR_PAIR(code[i]) | A_BOLD);
