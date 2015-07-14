@@ -6,15 +6,13 @@
 #define DEFAULT_NUM_GUESSES 10
 
 int main(int argv, char *argc[]) {
-  int maxGuesses = DEFAULT_NUM_GUESSES;
-  if (argv == 2) maxGuesses = atoi(argc[1]);
+  int maxGuesses = (argc > 1) ? atoi(argv[1]) : DEFAULT_NUM_GUESSES;
   if (maxGuesses <= 0) maxGuesses = DEFAULT_NUM_GUESSES;
   if (maxGuesses > 15) maxGuesses = 15;
 
 	Windows windows;
 	if (!initScreen(windows)) {
-    std::cerr << "braincurses: Your terminal cannot display colors.\n"
-         << "Gameplay is not possible without colors." << std::endl;
+    std::cerr << argv[0] << ": Your terminal cannot display colors." << std::endl;
     exit(1);
 	}
 
