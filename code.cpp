@@ -11,39 +11,39 @@
 #include <string>
 
 Code::Code() {
-	Code(time(NULL));
+  Code(time(NULL));
 }
 
 Code::Code(int seed) {
-	srand(seed);
-	codeLength = DEFAULT_CODE_LENGTH;
-	for (int i = 0; i < 6; i++) {
-		digits[i] = 0;
-	}
+  srand(seed);
+  codeLength = DEFAULT_CODE_LENGTH;
+  for (int i = 0; i < 6; i++) {
+    digits[i] = 0;
+  }
 }
 
 Code::~Code() {}
 
 int Code::getRandomNumber() {
-	return rand() % 6 + 1;
+  return rand() % 6 + 1;
 }
 
 void Code::createCode() {
-	if (code.size() > 0) {
-		code.clear();
-	}
-	for (int i = 0; i < codeLength; i++) {
-		code.push_back(getRandomNumber());
-		digits[code[i]]++;
-	}
+  if (code.size() > 0) {
+    code.clear();
+  }
+  for (int i = 0; i < codeLength; i++) {
+    code.push_back(getRandomNumber());
+    digits[code[i]]++;
+  }
 }
 
 std::vector<int> Code::getCode() {
-	return code;
+  return code;
 }
 
 int Code::getCodeLength() {
-	return codeLength;
+  return codeLength;
 }
 
 // Each index will have either 0, 1, or 2.
@@ -51,34 +51,34 @@ int Code::getCodeLength() {
 // 1 == correct color
 // 2 == correct color and column
 std::vector<int> Code::isCorrect(std::vector<int> guess) {
-	std::vector<int> correct (guess.size(), 0);
+  std::vector<int> correct (guess.size(), 0);
 
-	unsigned i, j;
-	std::map<int,int> digitsUsed;
-	for (i = 0; i < guess.size(); i++) {
-		digitsUsed[i] = 0;
-	}
+  unsigned i, j;
+  std::map<int,int> digitsUsed;
+  for (i = 0; i < guess.size(); i++) {
+    digitsUsed[i] = 0;
+  }
 
-	for (i = 0; i < guess.size(); i++) {
-		if (guess[i] == code[i]) {
-			correct[i] = 2;
-			digitsUsed[code[i]]++;
-		}
-	}
+  for (i = 0; i < guess.size(); i++) {
+    if (guess[i] == code[i]) {
+      correct[i] = 2;
+      digitsUsed[code[i]]++;
+    }
+  }
 
-	for (i = 0; i < guess.size(); i++) {
-		for (j = 0; j < guess.size(); j++) {
-			if (correct[i] == 0) {
-				if (guess[i] == code[j] && digitsUsed[code[j]] < digits[code[j]]) {
-					correct[i] = 1;
-					digitsUsed[code[j]]++;
-				}
-			}
-		}
-	}
-	return correct;
+  for (i = 0; i < guess.size(); i++) {
+    for (j = 0; j < guess.size(); j++) {
+      if (correct[i] == 0) {
+        if (guess[i] == code[j] && digitsUsed[code[j]] < digits[code[j]]) {
+          correct[i] = 1;
+          digitsUsed[code[j]]++;
+        }
+      }
+    }
+  }
+  return correct;
 }
 
 void Code::setCodeLength(int codeLength) {
-	this->codeLength = codeLength;
+  this->codeLength = codeLength;
 }
