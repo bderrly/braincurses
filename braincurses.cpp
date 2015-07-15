@@ -64,9 +64,7 @@ int main(int argc, char *argv[]) {
 #else
   Code code;
 #endif
-  if (codeLength != DEFAULT_CODE_LENGTH) {
-    code.setCodeLength(codeLength);
-  }
+  code.setCodeLength(codeLength);
   do {
     code.createCode();
 
