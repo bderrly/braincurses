@@ -5,7 +5,7 @@ LDLIBS += -lncurses
 
 all: braincurses
 
-debug: CXXFLAGS += -DDEBUG -ggdb
+debug: CXXFLAGS += -DDEBUG -ggdb -O0
 debug: braincurses
 
 braincurses: braincurses.o code.o windows.o
