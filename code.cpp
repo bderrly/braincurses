@@ -9,32 +9,42 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <random>
 
 Code::Code() {
-  Code(time(NULL));
-}
-
-Code::Code(int seed) {
-  srand(seed);
+  initialized = false;
+  std::random_device rd;
+  seed = rd();
   codeLength = DEFAULT_CODE_LENGTH;
-  for (int i = 0; i < 6; i++) {
-    digits[i] = 0;
-  }
 }
 
-Code::~Code() {}
+Code::Code(int seed) : Code() {
+  this->seed = seed;
+}
+
+// This is intended solely for unit testing.
+Code::Code(std::vector<int> code) {
+  this->code = code;
+  codeLength = (int) code.size();
+}
+
+void Code::initialize() {
+  this->engine = std::default_random_engine (seed);
+  this->dist = std::uniform_int_distribution<> (1, 6);
+  initialized = true;
+}
 
 int Code::getRandomNumber() {
-  return rand() % 6 + 1;
+  return dist(engine);
 }
 
 void Code::createCode() {
+  if (!initialized) initialize();
   if (code.size() > 0) {
     code.clear();
   }
   for (int i = 0; i < codeLength; i++) {
     code.push_back(getRandomNumber());
-    digits[code[i]]++;
   }
 }
 
@@ -51,28 +61,21 @@ int Code::getCodeLength() {
 // 1 == correct color
 // 2 == correct color and column
 std::vector<int> Code::isCorrect(std::vector<int> guess) {
-  std::vector<int> correct (guess.size(), 0);
+  std::vector<int> correct(codeLength, 0);
+  std::vector<int> skip(codeLength, 0);
 
-  unsigned i, j;
-  std::map<int,int> digitsUsed;
-  for (i = 0; i < guess.size(); i++) {
-    digitsUsed[i] = 0;
-  }
-
-  for (i = 0; i < guess.size(); i++) {
-    if (guess[i] == code[i]) {
+  int i, j;
+  for (i = 0; i < codeLength; ++i) {
+    if (code[i] == guess[i] && skip[i] != 1) {
       correct[i] = 2;
-      digitsUsed[code[i]]++;
+      skip[i] = 1;
+      continue;
     }
-  }
-
-  for (i = 0; i < guess.size(); i++) {
-    for (j = 0; j < guess.size(); j++) {
-      if (correct[i] == 0) {
-        if (guess[i] == code[j] && digitsUsed[code[j]] < digits[code[j]]) {
-          correct[i] = 1;
-          digitsUsed[code[j]]++;
-        }
+    for (j = 0; j < codeLength; ++j) {
+      if (code[i] == guess[j] && i != j && skip[j] != 1) {
+        correct[j] = 1;
+        skip[j] = 1;
+        break;
       }
     }
   }

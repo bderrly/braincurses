@@ -2,6 +2,7 @@
  * Copyright © 2015, Brian Derr <brian@derrclan.com>
  */
 
+#include <iostream>
 #include <unordered_map>
 #include <vector>
 
@@ -14,25 +15,38 @@ const std::unordered_map<int, std::vector<int>> nullSeed = {
   {5, {2, 5, 4, 2, 6}},
   {6, {2, 5, 4, 2, 6, 2}}};
 
-LT_BEGIN_SUITE(code)
+void printCollection(std::vector<int> v) {
+  std::cout << "{";
+  for (auto i = v.begin(); i != v.end(); ++i) {
+    if (i == v.end()) {
+      std::cout << *i;
+    } else {
+      std::cout << *i << ", ";
+    }
+  }
+  std::cout << "}" << std::endl;
+}
+
+LT_BEGIN_SUITE(code4)
   Code *code;
 
   void set_up() {
-    code = new Code(0);
-    code->createCode();
+    code = new Code(nullSeed.at(4));
+    //code->createCode();
   }
+
   void tear_down() {
     delete code;
   }
-LT_END_SUITE(code)
+LT_END_SUITE(code4)
 
 LT_BEGIN_SUITE(code5)
   Code *code;
 
   void set_up() {
-    code = new Code(0);
-    code->setCodeLength(5);
-    code->createCode();
+    code = new Code(nullSeed.at(5));
+    //code->setCodeLength(5);
+    //code->createCode();
   }
 
   void tear_down() {
@@ -44,9 +58,9 @@ LT_BEGIN_SUITE(code6)
   Code *code;
 
   void set_up() {
-    code = new Code(0);
-    code->setCodeLength(6);
-    code->createCode();
+    code = new Code(nullSeed.at(6));
+    //code->setCodeLength(6);
+    //code->createCode();
   }
 
   void tear_down() {
@@ -55,49 +69,49 @@ LT_BEGIN_SUITE(code6)
 LT_END_SUITE(code6)
 
 
-LT_BEGIN_AUTO_TEST(code, goodGuess)
+LT_BEGIN_AUTO_TEST(code4, goodGuess)
   std::vector<int> guess = nullSeed.at(4);
   std::vector<int> expected (4, 2);
   std::vector<int> reply = code->isCorrect(guess);
   LT_ASSERT_COLLECTIONS_EQ(expected.begin(), expected.end(), reply.begin())
 LT_END_AUTO_TEST(goodGuess)
 
-LT_BEGIN_AUTO_TEST(code, badGuess)
+LT_BEGIN_AUTO_TEST(code4, badGuess)
   std::vector<int> guess (4, 0);
   std::vector<int> expected (4, 0);
   std::vector<int> reply = code->isCorrect(guess);
   LT_ASSERT_COLLECTIONS_EQ(expected.begin(), expected.end(), reply.begin())
 LT_END_AUTO_TEST(badGuess)
 
-LT_BEGIN_AUTO_TEST(code, oneCorrect)
+LT_BEGIN_AUTO_TEST(code4, oneCorrect)
   std::vector<int> guess = {2, 3, 1, 0};
   std::vector<int> expected = {2, 0, 0, 0};
   std::vector<int> reply = code->isCorrect(guess);
   LT_ASSERT_COLLECTIONS_EQ(expected.begin(), expected.end(), reply.begin())
 LT_END_AUTO_TEST(oneCorrect)
 
-LT_BEGIN_AUTO_TEST(code, oneCorrectOnePartial)
+LT_BEGIN_AUTO_TEST(code4, oneCorrectOnePartial)
   std::vector<int> guess = {2, 4, 1, 0};
   std::vector<int> expected = {2, 1, 0, 0};
   std::vector<int> reply = code->isCorrect(guess);
   LT_ASSERT_COLLECTIONS_EQ(expected.begin(), expected.end(), reply.begin())
 LT_END_AUTO_TEST(oneCorrectOnePartial)
 
-LT_BEGIN_AUTO_TEST(code, twoCorrectOnePartial)
+LT_BEGIN_AUTO_TEST(code4, twoCorrectOnePartial)
   std::vector<int> guess = {2, 4, 1, 2};
   std::vector<int> expected = {2, 1, 0, 2};
   std::vector<int> reply = code->isCorrect(guess);
   LT_ASSERT_COLLECTIONS_EQ(expected.begin(), expected.end(), reply.begin())
 LT_END_AUTO_TEST(twoCorrectOnePartial)
 
-LT_BEGIN_AUTO_TEST(code, allPartial)
+LT_BEGIN_AUTO_TEST(code4, allPartial)
   std::vector<int> guess = {4, 2, 2, 5};
   std::vector<int> expected (4, 1);
   std::vector<int> reply = code->isCorrect(guess);
   LT_ASSERT_COLLECTIONS_EQ(expected.begin(), expected.end(), reply.begin())
 LT_END_AUTO_TEST(allPartial)
 
-LT_BEGIN_AUTO_TEST(code, fuzzyInput)
+LT_BEGIN_AUTO_TEST(code4, fuzzyInput)
   std::vector<int> guess = {0, -1, 10293928, -2};
   std::vector<int> expected (4, 0);
   std::vector<int> reply = code->isCorrect(guess);
