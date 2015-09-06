@@ -60,11 +60,12 @@ int main(int argc, char *argv[]) {
   bool winner = false;
 
 #ifdef DEBUG
-  Code code (0);
+  Code code(0);
 #else
   Code code;
 #endif
   code.setCodeLength(codeLength);
+
   do {
     code.createCode();
 
