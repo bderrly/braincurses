@@ -9,23 +9,21 @@
 #include <vector>
 
 
+// Maps the x-coordinates (within a WINDOW) for different codeLengths.
 const std::unordered_map<int, std::vector<int>> codePosition = {
     {4, {2, 6, 10, 14}},
     {5, {2, 5, 8, 11, 14}},
     {6, {3, 5, 7, 9, 11, 13}}};
 
 bool initScreen(Windows &windows) {
-  if (!initscr()) {
-    return false;
-  }
-  if (!has_colors()) {
-    return false;
-  }
+  if (!initscr()) return false;
+
+  if (!has_colors()) return false;
   start_color();
-  if (COLORS < 8) {
-    return false;
-  }
+  if (COLORS < 8) return false;
   use_default_colors();
+
+  // Only using the first eight color pairs.
   for (int i = 0; i < 8; i++) {
     if (i == 6) {
       // COLOR_CYAN is hard to distinguish from COLOR_BLUE; replace it with COLOR_WHITE.
@@ -34,10 +32,11 @@ bool initScreen(Windows &windows) {
       init_pair(i, i, -1);
     }
   }
+
   cbreak();
   noecho();
   intrflush(stdscr, FALSE);
-  curs_set(1); // visibile cursor 
+  curs_set(1);
 
   windows.emplace("header", createWindow(3, 21, 0, 0));
   windows.emplace("markers", createWindow(17, 17, 3, 0));
@@ -230,11 +229,13 @@ void displayGuess(WINDOW *window, int y, std::vector<int> guess) {
 }
 
 void displayMarkers(WINDOW *window, int y, std::vector<int> correct) {
-  int i, red, white;
-  red = white = 0;
+  int red, white, i;
+  red = white = i = 0;
   y = 15 - y;
 
-  i = 0;
+  // Loop through correct once to count up the red/white markers.
+  // This is done so that we do not give away the location of the colored
+  // markers.
   for (auto c : correct) {
     if (c == 2) {
       red++;
