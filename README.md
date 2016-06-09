@@ -37,5 +37,9 @@ First you need to compile the binary. The prerequisites are:
 
 `make`
 
+The game works the best with a dark background and white foreground. If you're
+using a custom color scheme, e.g., solarized, the colors may not be easy to
+distinguish.
+
 [WikiPedia]: https://en.wikipedia.org/wiki/Mastermind_(board_game)
 	"Mastermind"
