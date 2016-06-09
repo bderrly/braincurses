@@ -21,7 +21,7 @@ void cleanUpWindow(WINDOW *window, bool erase);
 void closeCurses();
 WINDOW *createWindow(int height, int width, int starty, int startx);
 void destroyWindow(WINDOW *window);
-void displayCode(WINDOW *window, Code code, bool colored);
+void displayCode(WINDOW *window, const Code &code, bool colored);
 void displayGuess(WINDOW *window, int y, std::vector<int> guess);
 void displayMarkers(WINDOW *window, int y, std::vector<int> markers);
 bool gameOverPlayAgain(WINDOW *window, bool winner);
@@ -29,8 +29,8 @@ std::vector<int> getInput(WINDOW *window);
 bool initScreen(Windows &windows);
 bool isWinner(std::vector<int> guess);
 bool playAgain(WINDOW *window);
-bool playGame(Windows &windows, Code code, int maxGuesses);
-void prepareGameBoard(Windows &windows, int maxGuesses, Code code);
+bool playGame(Windows &windows, const Code &code, int maxGuesses);
+void prepareGameBoard(Windows &windows, int maxGuesses, const Code &code);
 void wipeGameBoard(Windows &windows);
 
 #endif

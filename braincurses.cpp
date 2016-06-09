@@ -16,10 +16,10 @@ void printUsage(std::string binary) {
 }
 
 int main(int argc, char *argv[]) {
-  extern const int DEFAULT_CODE_LENGTH;
-  int codeLength = DEFAULT_CODE_LENGTH;
+  int codeLength = 4;
   int guesses = DEFAULT_NUM_GUESSES;
   int opt;
+
   while ((opt = getopt(argc, argv, "g:hc:")) != -1) {
     switch (opt) {
       case 'c':
@@ -60,14 +60,13 @@ int main(int argc, char *argv[]) {
   bool winner = false;
 
 #ifdef DEBUG
-  Code code(0);
+  Code code(codeLength, (unsigned) 0);
 #else
-  Code code;
+  Code code(codeLength);
 #endif
-  code.setCodeLength(codeLength);
 
   do {
-    code.createCode();
+    code.Create();
 
     wipeGameBoard(windows);
     prepareGameBoard(windows, guesses, code);

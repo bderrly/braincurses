@@ -50,7 +50,7 @@ bool initScreen(Windows &windows) {
   return true;
 }
 
-void prepareGameBoard(Windows &windows, int maxGuesses, Code code) {
+void prepareGameBoard(Windows &windows, int maxGuesses, const Code &code) {
   mvwaddstr(windows["header"], 1, 5, GAME_NAME.c_str());
   mvwaddstr(windows["info"], 1, 2, "Colors: ");
   wattron(windows["info"], A_BOLD);
@@ -286,14 +286,14 @@ bool gameOverPlayAgain(WINDOW *window, bool winner) {
   return playAgain(window);
 }
 
-void displayCode(WINDOW *window, Code code, bool colored) {
+void displayCode(WINDOW *window, const Code &code, bool colored) {
   int i = 0;
-  for (auto x : codePosition.at(code.getCodeLength())) {
+  for (auto x : codePosition.at(code.Length())) {
 #ifdef DEBUG
-    mvwaddch(window, 1, x, 'X' | COLOR_PAIR(code.getCode()[i]) | A_BOLD);
+    mvwaddch(window, 1, x, 'X' | COLOR_PAIR(code.Get()[i]) | A_BOLD);
 #else
     if (colored) {
-      mvwaddch(window, 1, x, 'X' | COLOR_PAIR(code.getCode()[i]) | A_BOLD);
+      mvwaddch(window, 1, x, 'X' | COLOR_PAIR(code.Get()[i]) | A_BOLD);
     } else {
       mvwaddch(window, 1, x, 'X');
     }
@@ -312,12 +312,12 @@ bool playAgain(WINDOW *window) {
   return (again == 'y' || again == '\n' ? true : false);
 }
 
-bool playGame(Windows &windows, Code code, int maxGuesses) {
+bool playGame(Windows &windows, const Code &code, int maxGuesses) {
   bool winner = false;
   std::vector<int> correct;
   for (int i = 0; i < maxGuesses; i++) {
-    std::vector<int> guess = getInput(windows["input"], code.getCodeLength());
-    correct = code.isCorrect(guess);
+    std::vector<int> guess = getInput(windows["input"], code.Length());
+    correct = code.IsCorrect(guess);
 
     displayGuess(windows["guesses"], i, guess);
     displayMarkers(windows["markers"], i, correct);
