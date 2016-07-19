@@ -6,6 +6,14 @@
 
 #include <stdexcept>
 
+// I learned that you must actually declare AND initialize static member variables.
+// Assigning values in the header file is not enough. Not defining these here results
+// in linker errors like "undefined reference to Code::NOPE".
+// http://stackoverflow.com/questions/5603101
+const int Code::NOPE = 0;
+const int Code::ALMOST = 1;
+const int Code::NAILED_IT = 2;
+const int Code::USED = -1;
 
 Code::Code(int length) : initialized_(false), length_(length) {
   initialize(rd_());
