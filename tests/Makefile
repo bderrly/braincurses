@@ -1,15 +1,21 @@
-INCLUDE_DIRS := ../external/bandit
+INCLUDE_DIRS := ../external/bandit ../external/json/src
 
 CXXFLAGS += -Wall -std=c++11
 CPPFLAGS += $(foreach includedir,$(INCLUDE_DIRS),-I$(includedir))
 
-all: clean test run
+.PHONY : all clean run
 
-run:
-	./test
+all : test run
 
-test: test.o code_test.o ../code.o
+run : test_table
+	./test test_table
+
+test : test.o code_test.o ../code.o
 	$(LINK.cc) $^ -o $@
 
-clean:
-	@- $(RM) test
+test_table :
+	python gentable.py > test_table
+
+clean :
+	@- $(RM) test test_table
+	@- $(RM) *.o
