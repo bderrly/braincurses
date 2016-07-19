@@ -317,7 +317,7 @@ bool playGame(Windows &windows, const Code &code, int maxGuesses) {
   std::vector<int> correct;
   for (int i = 0; i < maxGuesses; i++) {
     std::vector<int> guess = getInput(windows["input"], code.Length());
-    correct = code.IsCorrect(guess);
+    correct = code.IsCorrect(guess.begin(), guess.end());
 
     displayGuess(windows["guesses"], i, guess);
     displayMarkers(windows["markers"], i, correct);
