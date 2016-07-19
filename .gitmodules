@@ -1,3 +1,6 @@
 [submodule "external/bandit"]
 	path = external/bandit
 	url = https://github.com/joakimkarlsson/bandit.git
+[submodule "external/json"]
+	path = external/json
+	url = https://github.com/nlohmann/json.git
