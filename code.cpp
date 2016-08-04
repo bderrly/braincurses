@@ -4,8 +4,6 @@
 
 #include "code.h"
 
-#include <stdexcept>
-
 // I learned that you must actually declare AND initialize static member variables.
 // Assigning values in the header file is not enough. Not defining these here results
 // in linker errors like "undefined reference to Code::NOPE".
@@ -44,37 +42,4 @@ void Code::Create() {
   for (int i = 0; i < length_; ++i) {
     code_.push_back(GetRandomNumber());
   }
-}
-
-// Each index will have either 0, 1, or 2.
-// 0 == not a match
-// 1 == correct color
-// 2 == correct color and column
-std::vector<int> Code::IsCorrect(std::vector<int> &guess) const {
-  std::vector<int> correct(code_.size(), 0);
-  std::vector<int> skip(code_.size(), 0);
-
-  std::vector<int>::size_type i, j;
-  for (i = 0; i != code_.size(); i++) {
-    if (code_[i] == guess[i] && skip[i] != 1) {
-      correct[i] = 2;
-      skip[i] = 1;
-      continue;
-    }
-    for (j = 0; j != code_.size(); j++) {
-      if (code_[i] == guess[j] && i != j && skip[j] != 1) {
-        correct[j] = 1;
-        skip[j] = 1;
-        break;
-      }
-    }
-  }
-  return correct;
-}
-
-void Code::SetLength(int length) {
-  if (length > 6 || length < 4) {
-    throw std::invalid_argument("length must be in the range [4, 6]");
-  }
-  length_ = length;
 }

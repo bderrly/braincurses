@@ -14,27 +14,12 @@ using namespace bandit;
 using json = nlohmann::json;
 
 
-// template <class Iterator>
-// std::stringstream printVector(Iterator start, Iterator end) {
-//   std::stringstream ss;
-//   for (auto i = start; i != end; ++i) {
-//     ss << *i << ", ";
-//   }
-//   return ss;
-// }
-
-
 go_bandit([](){
   describe("length", [](){
     Code code(4);
 
     it("should match constructor initializer", [&](){
         AssertThat(code.Length(), Equals(4));
-    });
-
-    it("setting works", [&](){
-        code.SetLength(5);
-        AssertThat(code.Length(), Equals(5));
     });
   });
 
@@ -59,9 +44,6 @@ go_bandit([](){
           AssertThat(ret, EqualsContainer(expected));
         } catch (AssertionException &ex) {
           std::cout << ex.GetMessage() << std::endl;
-          // std::cout << "guess: " << printVector(test[0].begin(), test[0].end()).str()
-          //     << "expected: " << printVector(test[1].begin(), test[1].end()).str()
-          //     << "actual: " << printVector(ret.begin(), ret.end()).str() << std::endl;
         }
       }
     });

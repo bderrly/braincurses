@@ -19,15 +19,13 @@ class Code {
     static const int NAILED_IT;
     static const int USED;
 
-    // Code(const Code&) = delete;
     Code(int length);
     Code(int length, int seed);
-    // For unit testing.
-    Code(int length, std::vector<int> secret);
+    Code(int length, std::vector<int> secret); // For unit testing.
+
     void Create();
-    int Length() const { return length_; };
     std::vector<int> Get() const { return code_; };
-    std::vector<int> IsCorrect(std::vector<int> &guess) const;
+    int Length() const { return length_; };
 
     // Where the magic happens.
     //
@@ -94,8 +92,6 @@ class Code {
       std::sort(result.begin(), result.end(), std::greater<int>());
       return result;
     }
-
-    void SetLength(int length);
 
   private:
     int GetRandomNumber();
