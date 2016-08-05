@@ -9,47 +9,52 @@
 #include "windows.h"
 
 
-const int DEFAULT_NUM_GUESSES = 10;
+const int MIN_CODE_LENGTH = 4;
+const int MAX_CODE_LENGTH = 6;
 
-void printUsage(std::string binary) {
-  std::cerr << "usage: " << binary << " [-c code length] [-g number of guesses]" << std::endl;
+const int DEFAULT_NUM_GUESSES = 10;
+const int MIN_NUM_GUESSES = 1;
+const int MAX_NUM_GUESSES = 15;
+
+
+void PrintUsage() {
+  std::cerr << "usage: braincurses [-c code_length] [-g guesses]" << std::endl;
 }
 
-int main(int argc, char *argv[]) {
-  int codeLength = 4;
-  int guesses = DEFAULT_NUM_GUESSES;
+void ProcessArgs(int argc, char *argv[], int &code_length, int &guesses) {
   int opt;
-
-  while ((opt = getopt(argc, argv, "g:hc:")) != -1) {
+  while ((opt = getopt(argc, argv, "c:g:h")) != -1) {
     switch (opt) {
       case 'c':
-        codeLength = atoi(optarg);
+        code_length = atoi(optarg);
         break;
       case 'g':
         guesses = atoi(optarg);
         break;
       case 'h':
       default:
-        printUsage(argv[0]);
+        PrintUsage();
         exit(EXIT_FAILURE);
     }
   }
 
-  if (codeLength > 6) {
-    codeLength = 6;
+  if (code_length > MAX_CODE_LENGTH) {
+    code_length = MAX_CODE_LENGTH;
+  } else if (code_length < MIN_CODE_LENGTH) {
+    code_length = MIN_CODE_LENGTH;
   }
 
-  if (codeLength < 4) {
-    codeLength = 4;
-  }
-
-  if (guesses > 15) {
-    guesses = 15;
-  }
-
-  if (guesses <= 0) {
+  if (guesses > MAX_NUM_GUESSES) {
+    guesses = MAX_NUM_GUESSES;
+  } else if (guesses <= 0) {
     guesses = DEFAULT_NUM_GUESSES;
   }
+}
+
+int main(int argc, char *argv[]) {
+  int code_length = MIN_CODE_LENGTH;
+  int guesses = DEFAULT_NUM_GUESSES;
+  ProcessArgs(argc, argv, code_length, guesses);
 
   Windows windows;
   if (!initScreen(windows)) {
@@ -57,14 +62,13 @@ int main(int argc, char *argv[]) {
     exit(EXIT_FAILURE);
   }
 
-  bool winner = false;
-
 #ifdef DEBUG
-  Code code(codeLength, (unsigned) 0);
+  Code code(code_length, (unsigned) 0);
 #else
-  Code code(codeLength);
+  Code code(code_length);
 #endif
 
+  bool winner = false;
   do {
     code.Create();
 
