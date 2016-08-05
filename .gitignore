@@ -23,6 +23,7 @@
 *.lib
 
 # Executables
+braincurses
 *.exe
 *.out
 *.app
