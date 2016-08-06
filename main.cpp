@@ -2,11 +2,13 @@
  * Copyright © 2015, Brian Derr <brian@derrclan.com>
  */
 
+#include <csignal>
+#include <cstdlib>
 #include <iostream>
 #include <unistd.h>
 
-#include "code.h"
 #include "braincurses.h"
+#include "code.h"
 
 
 const int MIN_CODE_LENGTH = 4;
@@ -51,6 +53,15 @@ void ProcessArgs(int argc, char* argv[], int& code_length, int& guesses) {
   }
 }
 
+void endwin_atexit_handler() {
+  endwin();
+}
+
+void endwin_signal_handler(int signal) {
+  endwin();
+  std::exit(EXIT_SUCCESS);
+};
+
 int main(int argc, char* argv[]) {
   int code_length = MIN_CODE_LENGTH;
   int guesses = DEFAULT_NUM_GUESSES;
@@ -60,6 +71,14 @@ int main(int argc, char* argv[]) {
   if (!bc.Initialized()) {
     std::cerr << argv[0] << ": Your terminal cannot display colors." << std::endl;
     exit(EXIT_FAILURE);
+  }
+
+  std::signal(SIGINT, endwin_signal_handler);
+
+  int result = std::atexit(endwin_atexit_handler);
+  if (result != 0) {
+    std::cerr << "atexit registration failed" << std::endl;
+    return EXIT_FAILURE;
   }
 
 #ifdef DEBUG
@@ -75,5 +94,5 @@ int main(int argc, char* argv[]) {
     winner = bc.PlayGame(code);
   } while (bc.GameOverPlayAgain(winner));
 
-  return 0;
+  return EXIT_SUCCESS;
 }

@@ -5,15 +5,14 @@
 #include "braincurses.h"
 
 #include <cstdlib>
-#include <unordered_map>
-#include <vector>
 
 
-// Maps the x-coordinates (within a WINDOW) for different codeLengths.
+// Maps the x-coordinates (within a WINDOW) for different values of code_length_.
 const std::unordered_map<int, std::vector<int>> codePosition = {
     {4, {2, 6, 10, 14}},
     {5, {2, 5, 8, 11, 14}},
-    {6, {3, 5, 7, 9, 11, 13}}};
+    {6, {3, 5, 7, 9, 11, 13}}
+};
 
 
 Braincurses::Braincurses(int code_length, int guesses) : 
@@ -57,7 +56,6 @@ void Braincurses::InitializeNcurses() {
   windows_.emplace(kInputWindow, CreateWindow(3, 60, 20, 0));
   windows_.emplace(kInfoWindow, CreateWindow(20, 22, 0, 38));
 
-  atexit(endwin_handler);
   initialized_ = true;
 }
 
@@ -326,8 +324,4 @@ bool Braincurses::PlayGame(const Code& code) {
   }
   DisplayCode(code, true);
   return winner;
-}
-
-void endwin_handler(void) {
-  endwin();
 }
