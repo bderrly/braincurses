@@ -7,30 +7,49 @@
 
 #include <ncurses.h>
 #include <string>
-#include <vector>
 #include <unordered_map>
+#include <vector>
 
 #include "code.h"
 
 const int INPUT_LENGTH = 7;
 const std::string GAME_NAME = "BrainCurses";
 
-typedef std::unordered_map<std::string, WINDOW*> Windows;
+const std::string kCodeWindow = "code";
+const std::string kGuessWindow = "guess";
+const std::string kHeaderWindow = "header";
+const std::string kInfoWindow = "info";
+const std::string kInputWindow = "input";
+const std::string kMarkerWindow = "marker";
+const std::string kWatermarkWindow = "watermark";
 
-void cleanUpWindow(WINDOW *window, bool erase);
-void closeCurses();
-WINDOW *createWindow(int height, int width, int starty, int startx);
-void destroyWindow(WINDOW *window);
-void displayCode(WINDOW *window, const Code &code, bool colored);
-void displayGuess(WINDOW *window, int y, std::vector<int> guess);
-void displayMarkers(WINDOW *window, int y, std::vector<int> markers);
-bool gameOverPlayAgain(WINDOW *window, bool winner);
-std::vector<int> getInput(WINDOW *window);
-bool initScreen(Windows &windows);
-bool isWinner(std::vector<int> guess);
-bool playAgain(WINDOW *window);
-bool playGame(Windows &windows, const Code &code, int maxGuesses);
-void prepareGameBoard(Windows &windows, int maxGuesses, const Code &code);
-void wipeGameBoard(Windows &windows);
+
+class Braincurses {
+  public:
+    Braincurses(int code_length, int guesses);
+    bool GameOverPlayAgain(bool winner);
+    bool Initialized() const { return initialized_; };
+    bool PlayGame(const Code& code);
+
+  private:
+    void CleanUpWindow(WINDOW* window);
+    WINDOW *CreateWindow(int height, int width, int starty, int startx);
+    void DisplayCode(const Code& code, bool colored);
+    void DisplayGuess(int y, std::vector<int> guess);
+    void DisplayMarkers(int y, std::vector<int> correct);
+    std::vector<int> GetInput();
+    void InitializeNcurses();
+    bool IsWinner(std::vector<int> guess);
+    bool PlayAgain();
+    void PrepareBoard(const Code& code);
+    void WipeBoard();
+
+    int code_length_;
+    int guesses_;
+    bool initialized_;
+    std::unordered_map<std::string, WINDOW*> windows_;
+};
+
+void endwin_handler(void);
 
 #endif

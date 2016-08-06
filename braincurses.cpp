@@ -21,7 +21,7 @@ void PrintUsage() {
   std::cerr << "usage: braincurses [-c code_length] [-g guesses]" << std::endl;
 }
 
-void ProcessArgs(int argc, char *argv[], int &code_length, int &guesses) {
+void ProcessArgs(int argc, char* argv[], int& code_length, int& guesses) {
   int opt;
   while ((opt = getopt(argc, argv, "c:g:h")) != -1) {
     switch (opt) {
@@ -51,13 +51,13 @@ void ProcessArgs(int argc, char *argv[], int &code_length, int &guesses) {
   }
 }
 
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
   int code_length = MIN_CODE_LENGTH;
   int guesses = DEFAULT_NUM_GUESSES;
   ProcessArgs(argc, argv, code_length, guesses);
 
-  Windows windows;
-  if (!initScreen(windows)) {
+  Braincurses bc(code_length, guesses);
+  if (!bc.Initialized()) {
     std::cerr << argv[0] << ": Your terminal cannot display colors." << std::endl;
     exit(EXIT_FAILURE);
   }
@@ -72,11 +72,8 @@ int main(int argc, char *argv[]) {
   do {
     code.Create();
 
-    wipeGameBoard(windows);
-    prepareGameBoard(windows, guesses, code);
-    winner = playGame(windows, code, guesses);
-    displayCode(windows["code"], code, true);
-  } while (gameOverPlayAgain(windows["input"], winner));
+    winner = bc.PlayGame(code);
+  } while (bc.GameOverPlayAgain(winner));
 
   return 0;
 }
