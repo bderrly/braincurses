@@ -1,8 +1,8 @@
-/* windows.cpp
+/* braincurses.cpp
  * Copyright © 2002–2015, Brian Derr <brian@derrclan.com>
  */
 
-#include "windows.h"
+#include "braincurses.h"
 
 #include <cstdlib>
 #include <unordered_map>

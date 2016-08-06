@@ -1,4 +1,4 @@
-/* braincurses.cpp
+/* main.cpp
  * Copyright © 2015, Brian Derr <brian@derrclan.com>
  */
 
@@ -6,7 +6,7 @@
 #include <unistd.h>
 
 #include "code.h"
-#include "windows.h"
+#include "braincurses.h"
 
 
 const int MIN_CODE_LENGTH = 4;

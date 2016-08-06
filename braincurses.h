@@ -1,9 +1,9 @@
-/* windows.h
+/* braincurses.h
  * Copyright © 2002, Brian Derr <brian@derrclan.com>
  */
 
-#ifndef WINDOWS_H
-#define WINDOWS_H
+#ifndef BRAINCURSES_H
+#define BRAINCURSES_H
 
 #include <ncurses.h>
 #include <string>
@@ -52,4 +52,4 @@ class Braincurses {
 
 void endwin_handler(void);
 
-#endif
+#endif  // BRAINCURSES_H
