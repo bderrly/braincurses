@@ -11,17 +11,21 @@
 #include <vector>
 
 
-// The Code object creates the random code the user is to guess.
+namespace code {
+  const int kNope = 0;
+  const int kAlmost = 1;
+  const int kNailedIt = 2;
+  const int kUsed = -1;
+}
+
+// The Code class creates the random code the user is to guess.
 class Code {
   public:
-    static const int NOPE;
-    static const int ALMOST;
-    static const int NAILED_IT;
-    static const int USED;
 
+    // Code();
     Code(int length);
-    Code(int length, int seed);
-    Code(int length, std::vector<int> secret); // For unit testing.
+    Code(int length, unsigned int seed);
+    Code(std::vector<int> secret); // For unit testing.
 
     void Create();
     std::vector<int> Get() const { return code_; };
@@ -31,8 +35,8 @@ class Code {
     //
     // Compare the user-supplied guess provided as iterators to the secret code_.
     // If the color and column match between the guess and the secret code then a
-    // NAILED_IT is added to the return vector. If the color matches but not the
-    // column then ALMOST, and if there is no match for the guess then NOPE.
+    // code::kNailedIt is added to the return vector. If the color matches but not the
+    // column then code::kAlmost, and if there is no match for the guess then code::kNope.
     //
     // The result vector is returned sorted with the closest match at the
     // beginning.
@@ -40,11 +44,11 @@ class Code {
     // Examples:
     // guess = {0, 1, 1, 2};
     // code = {0, 1, 2, 3};
-    // result = {NAILED_IT, NAILED_IT, ALMOST, NOPE};
+    // result = {code::kNailedIt, code::kNailedIt, code::kAlmost, code::kNope};
     //
     // guess = {0, 1, 1, 2};
     // code = {1, 1, 2, 3};
-    // result = {NAILED_IT, ALMOST, ALMOST, NOPE}
+    // result = {code::kNailedIt, code::kAlmost, code::kAlmost, code::kNope}
     // template <typename Iterator>
     template <class Iterator>
     std::vector<int> IsCorrect(Iterator guess_start, Iterator guess_end) const {
@@ -61,9 +65,9 @@ class Code {
       // First pass to mark all guesses that are fully correct.
       for (unsigned int i = 0; i < guess.size(); i++) {
         if (guess[i] == code[i]) {
-          result.push_back(NAILED_IT);
-          guess[i] = USED;
-          code[i] = USED;
+          result.push_back(code::kNailedIt);
+          guess[i] = code::kUsed;
+          code[i] = code::kUsed;
         }
       }
 
@@ -75,16 +79,16 @@ class Code {
         if (guess_count > 0 && code_count > 0) {
           int difference = guess_count - code_count;
           if (difference > 0) {
-            std::fill_n(std::back_inserter(result), difference, NOPE);
-            std::fill_n(std::back_inserter(result), code_count, ALMOST);
+            std::fill_n(std::back_inserter(result), difference, code::kNope);
+            std::fill_n(std::back_inserter(result), code_count, code::kAlmost);
           } else {
-            std::fill_n(std::back_inserter(result), guess_count, ALMOST);
+            std::fill_n(std::back_inserter(result), guess_count, code::kAlmost);
           }
         }
       }
 
-      // We need to fill the result vector up with NOPEs to the size expected.
-      std::fill_n(std::back_inserter(result), guess.size() - result.size(), NOPE);
+      // We need to fill the result vector up with code::kNope's to the size expected.
+      std::fill_n(std::back_inserter(result), guess.size() - result.size(), code::kNope);
 
       if (result.size() < 4 || result.size() > 6) {
         // throw an exception?
@@ -95,14 +99,11 @@ class Code {
 
   private:
     int GetRandomNumber();
-    void initialize(unsigned int seed);
 
     std::vector<int> code_;
     std::uniform_int_distribution<int> dist_;
     std::default_random_engine engine_;
-    bool initialized_;
     int length_;
-    std::random_device rd_;
 };
 
-#endif
+#endif  // CODE_H

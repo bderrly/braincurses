@@ -12,8 +12,8 @@
 
 #include "code.h"
 
-const int INPUT_LENGTH = 7;
-const std::string GAME_NAME = "BrainCurses";
+const int kInputLength = 7;
+const std::string kGameName = "BrainCurses";
 
 const std::string kCodeWindow = "code";
 const std::string kGuessWindow = "guess";
@@ -29,22 +29,22 @@ class Braincurses {
     Braincurses(int code_length, int guesses);
     bool GameOverPlayAgain(bool winner);
     bool Initialized() const { return initialized_; };
-    bool PlayGame(const Code& code);
+    bool PlayGame();
 
   private:
     void CleanUpWindow(WINDOW* window);
     WINDOW *CreateWindow(int height, int width, int starty, int startx);
-    void DisplayCode(const Code& code, bool colored);
+    void DisplayCode(bool colored);
     void DisplayGuess(int y, std::vector<int> guess);
     void DisplayMarkers(int y, std::vector<int> correct);
     std::vector<int> GetInput();
     void InitializeNcurses();
     bool IsWinner(std::vector<int> guess);
     bool PlayAgain();
-    void PrepareBoard(const Code& code);
+    void PrepareBoard();
     void WipeBoard();
 
-    int code_length_;
+    Code code_;
     int guesses_;
     bool initialized_;
     std::unordered_map<std::string, WINDOW*> windows_;

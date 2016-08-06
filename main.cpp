@@ -8,7 +8,6 @@
 #include <unistd.h>
 
 #include "braincurses.h"
-#include "code.h"
 
 
 const int MIN_CODE_LENGTH = 4;
@@ -68,10 +67,6 @@ int main(int argc, char* argv[]) {
   ProcessArgs(argc, argv, code_length, guesses);
 
   Braincurses bc(code_length, guesses);
-  if (!bc.Initialized()) {
-    std::cerr << argv[0] << ": Your terminal cannot display colors." << std::endl;
-    exit(EXIT_FAILURE);
-  }
 
   std::signal(SIGINT, endwin_signal_handler);
 
@@ -81,17 +76,9 @@ int main(int argc, char* argv[]) {
     return EXIT_FAILURE;
   }
 
-#ifdef DEBUG
-  Code code(code_length, (unsigned) 0);
-#else
-  Code code(code_length);
-#endif
-
   bool winner = false;
   do {
-    code.Create();
-
-    winner = bc.PlayGame(code);
+    winner = bc.PlayGame();
   } while (bc.GameOverPlayAgain(winner));
 
   return EXIT_SUCCESS;

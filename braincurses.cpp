@@ -6,6 +6,8 @@
 
 #include <cstdlib>
 
+#include "code.h"
+
 
 // Maps the x-coordinates (within a WINDOW) for different values of code_length_.
 const std::unordered_map<int, std::vector<int>> codePosition = {
@@ -16,7 +18,7 @@ const std::unordered_map<int, std::vector<int>> codePosition = {
 
 
 Braincurses::Braincurses(int code_length, int guesses) : 
-    code_length_(code_length), guesses_(guesses), initialized_(false) {
+    code_(Code(code_length)), guesses_(guesses), initialized_(false) {
   InitializeNcurses();
 }
 
@@ -59,8 +61,8 @@ void Braincurses::InitializeNcurses() {
   initialized_ = true;
 }
 
-void Braincurses::PrepareBoard(const Code& code) {
-  mvwaddstr(windows_[kHeaderWindow], 1, 5, GAME_NAME.c_str());
+void Braincurses::PrepareBoard() {
+  mvwaddstr(windows_[kHeaderWindow], 1, 5, kGameName.c_str());
   mvwaddstr(windows_[kInfoWindow], 1, 2, "Colors: ");
   wattron(windows_[kInfoWindow], A_BOLD);
 
@@ -96,7 +98,11 @@ void Braincurses::PrepareBoard(const Code& code) {
 
   wattroff(windows_[kInfoWindow], A_BOLD);
 
-  DisplayCode(code, false);
+#ifdef DEBUG
+  DisplayCode(true);
+#else
+  DisplayCode(false);
+#endif
 
   char guessLabel[3];
   for (int i = 1; i <= guesses_; i++) {
@@ -135,8 +141,8 @@ void Braincurses::WipeBoard() {
 }
 
 std::vector<int> Braincurses::GetInput() {
-  std::string delStr (INPUT_LENGTH, ' ');
-  std::vector<int> guessInput (code_length_, -1);
+  std::string delStr (kInputLength, ' ');
+  std::vector<int> guessInput (code_.Length(), -1);
   //int column[4] = {4, 19, 34, 49};
   int column[6] = {2, 11, 20, 29, 38, 47};
   int input;
@@ -191,14 +197,14 @@ std::vector<int> Braincurses::GetInput() {
         }
         break;
       case KEY_RIGHT:
-        if (x < code_length_) {
+        if (x < code_.Length()) {
           wmove(local_window, 1, column[x]);
           x++;
         }
         break;
       case KEY_BACKSPACE:
       case KEY_DC:
-        if (x > 0 && x <= code_length_) {
+        if (x > 0 && x <= code_.Length()) {
           x--;
           mvwaddstr(local_window, 1, column[x], delStr.c_str());
           guessInput[x] = -1;
@@ -208,7 +214,7 @@ std::vector<int> Braincurses::GetInput() {
         break;
     }
     wrefresh(local_window);
-    if (x == code_length_) {
+    if (x == code_.Length()) {
       break;
     }
   }
@@ -238,8 +244,8 @@ void Braincurses::DisplayMarkers(int y, std::vector<int> correct) {
 
   wattron(local_window, A_BOLD);
 
-  std::vector<int> x_positions = codePosition.at(code_length_);
-  for (int i = 0; i < code_length_; i++) {
+  std::vector<int> x_positions = codePosition.at(code_.Length());
+  for (int i = 0; i < code_.Length(); i++) {
     int marker = correct[i];
     int x = x_positions[i];
 
@@ -277,16 +283,16 @@ bool Braincurses::GameOverPlayAgain(bool winner) {
   return PlayAgain();
 }
 
-void Braincurses::DisplayCode(const Code& code, bool colored) {
+void Braincurses::DisplayCode(bool colored) {
   auto local_window = windows_[kCodeWindow];
 
   int i = 0;
-  for (auto x : codePosition.at(code.Length())) {
+  for (auto x : codePosition.at(code_.Length())) {
 #ifdef DEBUG
-    mvwaddch(local_window, 1, x, 'X' | COLOR_PAIR(code.Get()[i]) | A_BOLD);
+    mvwaddch(local_window, 1, x, 'X' | COLOR_PAIR(code_.Get()[i]) | A_BOLD);
 #else
     if (colored) {
-      mvwaddch(local_window, 1, x, 'X' | COLOR_PAIR(code.Get()[i]) | A_BOLD);
+      mvwaddch(local_window, 1, x, 'X' | COLOR_PAIR(code_.Get()[i]) | A_BOLD);
     } else {
       mvwaddch(local_window, 1, x, 'X');
     }
@@ -305,15 +311,16 @@ bool Braincurses::PlayAgain() {
   return (again == 'y' || again == '\n' ? true : false);
 }
 
-bool Braincurses::PlayGame(const Code& code) {
+bool Braincurses::PlayGame() {
+  code_.Create();
   WipeBoard();
-  PrepareBoard(code);
+  PrepareBoard();
 
   bool winner = false;
   std::vector<int> correct;
   for (int i = 0; i < guesses_; i++) {
     std::vector<int> guess = GetInput();
-    correct = code.IsCorrect(guess.begin(), guess.end());
+    correct = code_.IsCorrect(guess.begin(), guess.end());
 
     DisplayGuess(i, guess);
     DisplayMarkers(i, correct);
@@ -322,6 +329,6 @@ bool Braincurses::PlayGame(const Code& code) {
       break;
     }
   }
-  DisplayCode(code, true);
+  DisplayCode(true);
   return winner;
 }

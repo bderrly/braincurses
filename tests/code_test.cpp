@@ -25,7 +25,7 @@ go_bandit([](){
 
   describe("guesses", [](){
     std::vector<int> secret = {0, 1, 2, 3};
-    Code code(4, secret);
+    Code code(secret);
     std::ifstream test_table("test_table");
     json tests(test_table);
     test_table.close();
