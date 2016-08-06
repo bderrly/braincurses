@@ -8,7 +8,7 @@ all : braincurses
 debug : CXXFLAGS += -DDEBUG -ggdb -O0
 debug : braincurses
 
-braincurses : braincurses.o code.o windows.o
+braincurses : main.o code.o windows.o
 	$(LINK.cc) $^ ${LDLIBS} -o $@
 
 clean :
