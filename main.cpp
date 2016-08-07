@@ -10,12 +10,12 @@
 #include "braincurses.h"
 
 
-const int MIN_CODE_LENGTH = 4;
-const int MAX_CODE_LENGTH = 6;
+const int kMinCodeLength = 4;
+const int kMaxCodeLength = 6;
 
-const int DEFAULT_NUM_GUESSES = 10;
-const int MIN_NUM_GUESSES = 1;
-const int MAX_NUM_GUESSES = 15;
+const int kDefaultGuessCount = 10;
+const int kMinGuessCount = 1;
+const int kMaxGuessCount = 15;
 
 
 void PrintUsage() {
@@ -39,16 +39,16 @@ void ProcessArgs(int argc, char* argv[], int& code_length, int& guesses) {
     }
   }
 
-  if (code_length > MAX_CODE_LENGTH) {
-    code_length = MAX_CODE_LENGTH;
-  } else if (code_length < MIN_CODE_LENGTH) {
-    code_length = MIN_CODE_LENGTH;
+  if (code_length > kMaxCodeLength) {
+    code_length = kMaxCodeLength;
+  } else if (code_length < kMinCodeLength) {
+    code_length = kMinCodeLength;
   }
 
-  if (guesses > MAX_NUM_GUESSES) {
-    guesses = MAX_NUM_GUESSES;
+  if (guesses > kMaxGuessCount) {
+    guesses = kMaxGuessCount;
   } else if (guesses <= 0) {
-    guesses = DEFAULT_NUM_GUESSES;
+    guesses = kDefaultGuessCount;
   }
 }
 
@@ -62,8 +62,8 @@ void endwin_signal_handler(int signal) {
 };
 
 int main(int argc, char* argv[]) {
-  int code_length = MIN_CODE_LENGTH;
-  int guesses = DEFAULT_NUM_GUESSES;
+  int code_length = kMinCodeLength;
+  int guesses = kDefaultGuessCount;
   ProcessArgs(argc, argv, code_length, guesses);
 
   Braincurses bc(code_length, guesses);
