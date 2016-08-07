@@ -10,12 +10,12 @@
 #include "braincurses.h"
 
 
-const int kMinCodeLength = 4;
-const int kMaxCodeLength = 6;
+static const int kMinCodeLength = 4;
+static const int kMaxCodeLength = 6;
 
-const int kDefaultGuessCount = 10;
-const int kMinGuessCount = 1;
-const int kMaxGuessCount = 15;
+static const int kDefaultGuessCount = 10;
+static const int kMinGuessCount = 1;
+static const int kMaxGuessCount = 15;
 
 
 void PrintUsage() {
