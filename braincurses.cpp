@@ -26,12 +26,12 @@ void Braincurses::InitializeNcurses() {
   initscr();
 
   if (has_colors() == FALSE) {
-    // TODO: throw an exception.
+    // TODO: throw an exception?
   }
 
   start_color();
   if (COLORS < 8) {
-    // TODO: throw an exception.
+    // TODO: throw an exception?
   }
   use_default_colors();
 
@@ -143,7 +143,6 @@ void Braincurses::WipeBoard() {
 std::vector<int> Braincurses::GetInput() {
   std::string delStr (kInputLength, ' ');
   std::vector<int> guessInput (code_.Length(), -1);
-  //int column[4] = {4, 19, 34, 49};
   int column[6] = {2, 11, 20, 29, 38, 47};
   int input;
 
